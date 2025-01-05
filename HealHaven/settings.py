@@ -26,7 +26,12 @@ SECRET_KEY = "django-insecure-8g8d-)4n@-sbi!*a!&haf96+4cnk3&ewsl&utq$zu%3xh-tz!s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'heal-haven.vercel.app',  # Add your Vercel domain here
+]
+
 
 
 # Application definition
