@@ -1,1 +1,0 @@
-web: gunicorn HealHaven.wsgi --log-file -
