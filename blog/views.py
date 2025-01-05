@@ -37,29 +37,26 @@ from .forms import PostForm
 def home(request):
     if request.method == 'POST':
         name = request.POST['name']
-        print(name)
     return render(request, 'blog/home.html')
     
 def msg(request):
     current_user = request.user 
-    print(login)
 
-    print(current_user)
     
     return render(request, 'blog/msg.html', {'current_user': current_user})
 
 def base(request):
-    print("hi bhai")
+   
     return render(request, 'blog/base.html')
 
 def login(request):
-    print("login")
+    
     return render(request, 'blog/login.html')
 def register(request):
-    print("register")
+    
     return render(request, 'blog/register.html')
 def forgotpassword(request):
-    print("forgotpassword")
+    
     return render(request, 'blog/forgotpassword.html')
 
 
@@ -157,7 +154,7 @@ def student_login(request):
                     auth_login(request, authenticated_user)
 
                     messages.success(request, 'Student logged in successfully!')
-                    return redirect('home')  # Redirect to the student's home page
+                    return redirect('student_profile')  # Redirect to the student's home page
                 else:
                     messages.error(request, 'Invalid password for student account.')
             else:
@@ -192,7 +189,7 @@ def teacher_login(request):
                     auth_login(request, authenticated_user)
 
                     messages.success(request, 'Teacher logged in successfully!')
-                    return redirect('home')  # Redirect to the teacher's home page
+                    return redirect('teacher_profile')  # Redirect to the teacher's home page
                 else:
                     messages.error(request, 'Invalid password for teacher account.')
             else:
