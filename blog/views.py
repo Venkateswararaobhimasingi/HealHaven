@@ -407,7 +407,7 @@ def update_student_profile_view(request):
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
-        'simg': student_profile.image.url if student_profile.image else '/media/default_student_image.jpg',  # Default image if none exists
+        'simg': student_profile.image.url if student_profile.image else '/media/default.jpg',  # Default image if none exists
     }
     return render(request, 'blog/update_student_profile.html', context)
 
@@ -448,7 +448,7 @@ def update_teacher_profile_view(request):
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
-        'simg': teacher_profile.image.url if teacher_profile.image else '/media/default_teacher_image.jpg',  # Default image if none exists
+        'simg': teacher_profile.image.url if teacher_profile.image else '/media/default.jpg',  # Default image if none exists
     }
     return render(request, 'blog/update_teacher_profile.html', context)
 
