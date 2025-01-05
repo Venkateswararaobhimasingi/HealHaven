@@ -31,18 +31,12 @@ class StudentProfileDetails(models.Model):
     phone_number = models.CharField(max_length=15)  
     parents_number = models.CharField(max_length=15)  
     role = models.CharField(max_length=20, default='student')  # Defaults to "student"
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    image = models.URLField(max_length=500, blank=True, null=True,default='https:\\i.imgur.com\\7suwDp5.jpeg') 
 
     def __str__(self):
         return f'{self.user.username} Profile'
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        img = Image.open(self.image.path)
-        if img.height > 300 or img.width > 300:
-            output_size = (300, 300)
-            img.thumbnail(output_size)
-            img.save(self.image.path)
+    
 
 class TeacherProfileDetails(models.Model):
     id = models.AutoField(primary_key=True)
@@ -52,19 +46,12 @@ class TeacherProfileDetails(models.Model):
     email = models.EmailField()  # Required during registration
     phone_number = models.CharField(max_length=15, null=True, blank=True)  # Optional
     role = models.CharField(max_length=20, default='teacher')  # Defaults to "teacher"
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    image = models.URLField(max_length=500, blank=True, null=True,default='https:\\i.imgur.com\\7suwDp5.jpeg') 
 
     def __str__(self):
         return f'{self.user.username} Profile'
 
-    def save(self, *args, **kwargs):
-        self.role = self.role.lower()
-        super().save(*args, **kwargs)
-        img = Image.open(self.image.path)
-        if img.height > 300 or img.width > 300:
-            output_size = (300, 300)
-            img.thumbnail(output_size)
-            img.save(self.image.path) 
+    
       
 
 # models.py

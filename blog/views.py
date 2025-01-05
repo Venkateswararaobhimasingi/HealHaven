@@ -366,89 +366,103 @@ def teacher_profile_view(request):
     return render(request, 'blog/teacher_profile.html', context)
 
 
+import requests
+from django.conf import settings
 
-from .utils import handle_uploaded_file
+def upload_to_imgur(image_file):
+    """
+    Uploads an image file to Imgur and returns the public URL.
+    """
+    url = "https://api.imgur.com/3/image"
+    headers = {
+        "Authorization": f"Client-ID {settings.IMGUR_CLIENT_ID}"
+    }
 
+    try:
+        # Upload image to Imgur
+        response = requests.post(url, headers=headers, files={"image": image_file})
+        response.raise_for_status()  # Will raise an HTTPError if the status code is not 2xx
+
+        # Parse the response
+        response_data = response.json()
+        if response_data.get('success'):
+            return response_data['data']['link']  # Return the public image URL
+        else:
+            raise Exception("Imgur API response indicates failure.")
+    
+    except requests.exceptions.RequestException as e:
+        raise Exception(f"Failed to upload image to Imgur: {str(e)}")
 
 @login_required
 def update_student_profile_view(request):
-    # Access the StudentProfileDetails linked to the user
-    student_profile = request.user.student_profile  
+    student_profile = request.user.student_profile
 
-    # Initialize forms with current data
     user_form = UserUpdateForm(instance=request.user)
     profile_form = StudentProfileUpdateForm(instance=student_profile)
 
-    # For debugging, check the current profile picture URL
-    print(f"Current Profile Picture URL: {student_profile.image.url if student_profile.image else 'No image'}")
-
     if request.method == 'POST':
-        # Update forms with submitted data
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = StudentProfileUpdateForm(request.POST, request.FILES, instance=student_profile)
 
         if user_form.is_valid() and profile_form.is_valid():
-            # Save the updated user form
-            user = user_form.save(commit=False)  # Explicitly update the username
+            user = user_form.save(commit=False)
             user.username = user_form.cleaned_data['username']
             user.save()
 
-            # Save the profile form
+            image_file = request.FILES.get('image')
+            if image_file:
+                try:
+                    # Upload the image to Imgur
+                    imgur_url = upload_to_imgur(image_file)
+                    student_profile.image = imgur_url  # Set the image URL
+                except Exception as e:
+                    messages.error(request, f"Error uploading image: {str(e)}")
+                    return redirect('update_student_profile')
+
             profile_form.save()
-
             messages.success(request, 'Your profile has been updated successfully!')
-            return redirect('student_profile')  # Redirect to the profile view
-
-        else:
-            # Log errors for debugging
-            print("Errors in user_form:", user_form.errors)
-            print("Errors in profile_form:", profile_form.errors)
+            return redirect('student_profile')
 
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
-        'simg': student_profile.image.url if student_profile.image else '/media/default.jpg',  # Default image if none exists
+        'simg': student_profile.image if student_profile.image else 'https://i.imgur.com/7suwDp5.jpeg',
     }
     return render(request, 'blog/update_student_profile.html', context)
 
 @login_required
 def update_teacher_profile_view(request):
-    # Access the TeacherProfile linked to the user
-    teacher_profile = request.user.teacher_profile  
+    teacher_profile = request.user.teacher_profile
 
-    # Initialize forms with current data
     user_form = UserUpdateForm(instance=request.user)
     profile_form = TeacherProfileUpdateForm(instance=teacher_profile)
 
-    # For debugging, check the current profile picture URL
-    print(f"Current Profile Picture URL: {teacher_profile.image.url if teacher_profile.image else 'No image'}")
-
     if request.method == 'POST':
-        # Update forms with submitted data
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = TeacherProfileUpdateForm(request.POST, request.FILES, instance=teacher_profile)
 
         if user_form.is_valid() and profile_form.is_valid():
-            # Save the updated user form
-            user = user_form.save(commit=False)  # Explicitly update the username
+            user = user_form.save(commit=False)
             user.username = user_form.cleaned_data['username']
             user.save()
 
-            # Save the profile form
+            image_file = request.FILES.get('image')
+            if image_file:
+                try:
+                    imgur_url = upload_to_imgur(image_file)
+                    teacher_profile.image = imgur_url
+                except Exception as e:
+                    messages.error(request, f"Error uploading image: {str(e)}")
+                    return redirect('update_teacher_profile')
+
             profile_form.save()
-
             messages.success(request, 'Your profile has been updated successfully!')
-            return redirect('teacher_profile')  # Redirect to the teacher profile view
-
-        else:
-            # Log errors for debugging
-            print("Errors in user_form:", user_form.errors)
-            print("Errors in profile_form:", profile_form.errors)
+            return redirect('teacher_profile')
 
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
-        'simg': teacher_profile.image.url if teacher_profile.image else '/media/default.jpg',  # Default image if none exists
+        'simg': teacher_profile.image if teacher_profile.image else 'https://i.imgur.com/7suwDp5.jpeg',
     }
     return render(request, 'blog/update_teacher_profile.html', context)
 
@@ -690,7 +704,7 @@ def add_reply(request):
                 'role': reply.role,
                 'content': reply.content,
                 'date_posted': reply.date_posted.strftime('%B %d, %Y, %I:%M %p'),
-                'author_image': reply.author.student_profile.image.url if reply.role == 'student' else reply.author.teacher_profile.image.url,
+                'author_image': reply.author.student_profile.image if reply.role == 'student' else reply.author.teacher_profile.image,
             }
             return JsonResponse({'reply': reply_data})
         except Post.DoesNotExist:
@@ -781,18 +795,18 @@ def message_list(request):
     message_profiles = []
     for message in messages:
         if hasattr(message.sender_author, 'student_profile'):
-            sender_profile_pic = message.sender_author.student_profile.image.url
+            sender_profile_pic = message.sender_author.student_profile.image
         elif hasattr(message.sender_author, 'teacher_profile'):
-            sender_profile_pic = message.sender_author.teacher_profile.image.url
+            sender_profile_pic = message.sender_author.teacher_profile.image
         else:
-            sender_profile_pic = None
+            sender_profile_pic = 'https://i.imgur.com/7suwDp5.jpeg'
 
         if hasattr(message.receiver_author, 'student_profile'):
-            receiver_profile_pic = message.receiver_author.student_profile.image.url
+            receiver_profile_pic = message.receiver_author.student_profile.image
         elif hasattr(message.receiver_author, 'teacher_profile'):
-            receiver_profile_pic = message.receiver_author.teacher_profile.image.url
+            receiver_profile_pic = message.receiver_author.teacher_profile.image
         else:
-            receiver_profile_pic = None
+            receiver_profile_pic = 'https://i.imgur.com/7suwDp5.jpeg'
 
         message_profiles.append({
             'message': message,
@@ -866,18 +880,18 @@ def message_detail(request):
 
     if hasattr(message.sender_author, 'student_profile'):
      
-        sender_profile_pic = message.sender_author.student_profile.image.url
+        sender_profile_pic = message.sender_author.student_profile.image
         
     elif hasattr(message.sender_author, 'teacher_profile'):
    
-        sender_profile_pic = message.sender_author.teacher_profile.image.url
+        sender_profile_pic = message.sender_author.teacher_profile.image
 
     if hasattr(message.receiver_author, 'student_profile'):
 
-        receiver_profile_pic = message.receiver_author.student_profile.image.url
+        receiver_profile_pic = message.receiver_author.student_profile.image
     elif hasattr(message.receiver_author, 'teacher_profile'):
 
-        receiver_profile_pic = message.receiver_author.teacher_profile.image.url
+        receiver_profile_pic = message.receiver_author.teacher_profile.image
 
     return render(request, 'blog/msgdetail.html', {
         'message': message,

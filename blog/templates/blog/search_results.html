@@ -94,9 +94,9 @@
                 <div class="profile-header">
                     <div class="profile-img-container">
                         {% if data.type == 'student' %}
-                            <img src="{{ data.profile.user.student_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                            <img src="{{ data.profile.user.student_profile.image }}" alt="Profile Picture" class="post-profile-pic">
                         {% elif data.type == 'teacher' %}
-                            <img src="{{ data.profile.user.teacher_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                            <img src="{{ data.profile.user.teacher_profile.image }}" alt="Profile Picture" class="post-profile-pic">
                         {% endif %}
                         <h6>{{ data.profile.user.username }}</h6>
                     </div>

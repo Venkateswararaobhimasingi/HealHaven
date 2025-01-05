@@ -97,6 +97,9 @@ DATABASES = {
     )
 }
 
+IMGUR_CLIENT_ID = "b2120d536b887bc"
+IMGUR_CLIENT_SECRET = "6c527bb3204d5ba4e81f488f49a4d78949beb076"
+
 
 
 # Password validation

@@ -293,9 +293,9 @@
         <div class="post-card">
             <div class="post-header">
                 {% if post.role == 'student' %}
-                    <img src="{{ post.author.student_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                    <img src="{{ post.author.student_profile.image }}" alt="Profile Picture" class="post-profile-pic">
                 {% elif post.role == 'teacher' or post.role == 'doctor' %}
-                    <img src="{{ post.author.teacher_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                    <img src="{{ post.author.teacher_profile.image }}" alt="Profile Picture" class="post-profile-pic">
                 {% endif %}
                 <div class="post-user-details">
                     <span class="post-username">{{ post.author.username }} ({{ post.role }})</span>
@@ -334,9 +334,9 @@
                     {% for reply in post.replies.all|dictsortreversed:"date_posted" %}
                     <div class="reply">
                         {% if reply.role == 'student' %}
-                        <img src="{{ reply.author.student_profile.image.url }}" alt="Profile Picture" class="reply-profile-pic">
+                        <img src="{{ reply.author.student_profile.image }}" alt="Profile Picture" class="reply-profile-pic">
                         {% elif reply.role == 'teacher' or post.role == 'doctor' %}
-                        <img src="{{ reply.author.teacher_profile.image.url }}" alt="Profile Picture" class="reply-profile-pic">
+                        <img src="{{ reply.author.teacher_profile.image }}" alt="Profile Picture" class="reply-profile-pic">
                         {% endif %}
                         <div class="reply-content-wrapper">
                             <div class="reply-author">{{ reply.author.username }}</div>
