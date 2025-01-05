@@ -1,9 +1,10 @@
-# your_app/utils.py
 import os
 
 def handle_uploaded_file(uploaded_file):
-    temp_file_path = os.path.join('/tmp', uploaded_file.name)
-    with open(temp_file_path, 'wb') as temp_file:
+    profile_pics_path = os.path.join(settings.MEDIA_ROOT, 'profile_pics')
+    os.makedirs(profile_pics_path, exist_ok=True)
+    file_path = os.path.join(profile_pics_path, uploaded_file.name)
+    with open(file_path, 'wb') as destination:
         for chunk in uploaded_file.chunks():
-            temp_file.write(chunk)
-    return temp_file_path
+            destination.write(chunk)
+    return file_path
