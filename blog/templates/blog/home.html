@@ -115,7 +115,7 @@
         .text4 { left: 70%; animation-duration: 6s; }
         .text5 { left: 90%; animation-duration: 5s; }
 
-        /* Notification bell */
+        /* Notification bell 
         .notification-bell {
             position: relative;
         }
@@ -129,7 +129,7 @@
             border-radius: 50%;
             padding: 2px 6px;
             font-size: 0.8rem;
-        }
+        }*/
 
         /* Search bar adjustments */
         .form-control {
@@ -173,6 +173,44 @@
                 border-radius: 5px;
             } */
            /* Ensure the navbar adapts for small screens */
+           /* Notification bell */
+.notification-bell {
+    position: relative;
+    display: inline-block; /* Ensure it aligns properly with other elements */
+    font-size: 1.5rem; /* Adjust icon size for responsiveness */
+}
+
+/* Notification count */
+.notification-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 1px 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+    z-index: 10; /* Ensure it stays above other elements */
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+    .notification-bell {
+        font-size: 1.2rem; /* Decrease the size of the bell icon */
+    }
+
+    .notification-count {
+        font-size: 0.7rem; /* Adjust count size for smaller screens */
+        padding: 1px 5px; /* Adjust padding for better appearance */
+        top: 0;
+        right: 0;
+        transform: translate(50%, -50%); /* Ensure it stays in the correct position */
+    }
+}
+
 @media (max-width: 768px) {
     .navbar-nav {
         flex-direction: column; /* Stack the navbar items vertically */
