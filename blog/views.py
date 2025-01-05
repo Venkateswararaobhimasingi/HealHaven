@@ -589,6 +589,7 @@ from django.http import JsonResponse
 import google.generativeai as genai
 import time
 import logging
+import json
 
 # Configure Generative AI API key
 genai.configure(api_key="AIzaSyDEV4I8_gmbwDN2eMfdHd_xBQaLzZ-oUoE")
@@ -600,7 +601,7 @@ logger = logging.getLogger(__name__)
 
 def chatbot_response(request):
     if request.method == "POST":
-        import json
+        
         data = json.loads(request.body)
         user_message = data.get("message")
 
