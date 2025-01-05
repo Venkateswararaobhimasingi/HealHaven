@@ -98,11 +98,11 @@
                 <div style="display: flex; align-items: center; margin-bottom: 10px;">
                     {% if message.sender_role == 'student' %}
                         {% if message.sender.student_profile and message.sender.student_profile.image %}
-                            <img src="{{ message.sender.student_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                            <img src="{{ message.sender.student_profile.image }}" alt="Profile Picture" class="post-profile-pic">
                         {% endif %}
                     {% elif message.sender_role == 'teacher' or message.sender_role == 'doctor' %}
                         {% if message.sender.teacher_profile and message.sender.teacher_profile.image %}
-                            <img src="{{ message.sender.teacher_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                            <img src="{{ message.sender.teacher_profile.image }}" alt="Profile Picture" class="post-profile-pic">
                         {% endif %}
                     {% endif %}
                     <div>
