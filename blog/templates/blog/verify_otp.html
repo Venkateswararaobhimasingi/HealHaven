@@ -1,0 +1,78 @@
+{% extends 'blog/home.html' %}
+
+{% block content %}
+<style>
+    .wrapper-ln {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+    }
+
+    .otp-card-ln {
+        width: 350px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        background: rgba(0, 50, 50, 0.8);
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        color: #00ff00;
+        text-align: center;
+        font-family: 'Poppins', Arial, sans-serif;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .otp-card-ln input, .otp-card-ln button {
+        display: block;
+        width: 90%;
+        margin: 10px auto;
+        padding: 10px;
+        border: 2px solid #00ff00;
+        border-radius: 5px;
+        background: rgba(0, 50, 50, 0.8);
+        color: #00ff00;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .otp-card-ln button {
+        cursor: pointer;
+        font-weight: bold;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .otp-card-ln button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+    }
+</style>
+
+<div class="wrapper-ln">
+    <div class="otp-card-ln">
+        <h2>Verify OTP</h2>
+        <form method="POST" action="{% url 'verify_otp' %}">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <input type="text" name="otp" placeholder="Enter OTP" required>
+            <button type="submit">Verify OTP</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

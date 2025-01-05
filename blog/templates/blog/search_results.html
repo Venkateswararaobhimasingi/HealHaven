@@ -1,0 +1,133 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+<head>
+    <style>
+        .post-content-wrapper {
+            display: grid;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            overflow: auto;
+            padding: 70px;
+            box-sizing: border-box;
+            scrollbar-color: #00ff00 rgba(0, 50, 50, 0.9);
+            gap: 20px;
+        }
+
+        .profile-card {
+            max-width: 700px;
+            width: 600px;
+            background-color: rgba(0, 50, 50, 0.9);
+            color: #00ff00;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .profile-details {
+            margin-top: 10px;
+            line-height: 1.6;
+            width: 100%;
+        }
+
+        .status-counts {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: rgba(0, 70, 70, 0.9);
+            border-radius: 10px;
+            color: #a4f9a4;
+            width: 100%;
+        }
+
+        .status-counts span {
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        .query-highlight {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        /* Style for profile picture */
+        .post-profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .profile-img-container {
+            display: flex;
+            align-items: center;
+        }
+
+    </style>
+</head>
+
+<div class="post-content-wrapper">
+    <div class="profile-header">
+        <h2 style="color: #a4f9a4;">Search Results for "<span class="query-highlight">{{ query }}</span>"</h2>
+    </div>
+
+    {% if profile_data %}
+        {% for data in profile_data %}
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-img-container">
+                        {% if data.type == 'student' %}
+                            <img src="{{ data.profile.user.student_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                        {% elif data.type == 'teacher' %}
+                            <img src="{{ data.profile.user.teacher_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                        {% endif %}
+                        <h6>{{ data.profile.user.username }}</h6>
+                    </div>
+                    <span>{{ data.type|title }} Profile</span>
+                </div>
+                <div class="profile-details">
+                    {% if data.type == 'student' %}
+                        <p><strong>Roll Number:</strong> {{ data.profile.roll_number }}</p>
+                        <p><strong>Email:</strong> {{ data.profile.email }}</p>
+                        <p><strong>Department:</strong> {{ data.profile.department }}</p>
+                        <p><strong>Phone Number:</strong> {{ data.profile.phone_number }}</p>
+                        <p><strong>Parent's Phone:</strong> {{ data.profile.parents_number }}</p>
+                        <p><strong>Studying Year:</strong> {{ data.profile.studying_year }}</p>
+                    {% elif data.type == 'teacher' %}
+                        <p><strong>Department:</strong> {{ data.profile.department }}</p>
+                        <p><strong>Email:</strong> {{ data.profile.email }}</p>
+                        <p><strong>Roll Number:</strong> {{ data.profile.roll_number }}</p>
+                        <p><strong>Phone Number:</strong> {{ data.profile.phone_number }}</p>
+                        <p><strong>Role:</strong> {{ data.profile.role }}</p>
+                    {% endif %}
+                </div>
+                <div class="status-counts">
+                    <p><span>Accept:</span> {{ data.accept_count }}</p>
+                    <p><span>Reject:</span> {{ data.reject_count }}</p>
+                    <p><span>Pending:</span> {{ data.pending_count }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: #a4f9a4;">No profiles found matching your query.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

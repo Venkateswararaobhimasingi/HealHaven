@@ -1,0 +1,127 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+
+<head>
+    <style>
+        
+
+        .post-content-wrapper {
+            display: grid;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        overflow: auto;
+        padding: 70px;
+        box-sizing: border-box;
+        gap: 20px;
+        }
+
+        .post-card {
+            max-width: 600px;
+            width: 500px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 50, 50, 0.9);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* Default background for cards */
+            color: #00ff00;
+            text-align: left;
+            margin-bottom: 20px;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        
+        .post-card.unread {
+            background: rgba(45, 139, 2,0.3);
+            
+        }
+        
+        .post-card.read {
+            background: rgba(0, 50, 50, 0.9); /* Neutral background for read messages */
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .post-profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #00ff00;
+            margin-right: 15px;
+        }
+
+        .post-details {
+            display: flex;
+            align-items: center;
+           
+        }
+
+        .post-email {
+            font-size: 14px;
+            color: #a4f9a4;
+            
+        }
+
+        .post-date {
+            font-size: 12px;
+            color: #c6ffc6;
+           
+        }
+
+        .post-subject {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 5px 0;
+            color: #b5ffb5;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+    </style>
+</head>
+
+<div class="post-content-wrapper">
+    {% for item in message_profiles %}
+    <div class="post-card {% if item.message.receiver_author == current_user %}
+        {% if item.message.receiver_status == 'unread' %}unread{% else %}read{% endif %}
+    {% else %}
+        {% if item.message.sender_status == 'unread' %}unread{% else %}read{% endif %}
+    {% endif %}">
+        <div class="post-header">
+            <div class="post-details">
+                {% if item.message.receiver_author == current_user %}
+                <!-- Show sender's profile picture if the current user is the receiver -->
+                <img src="{{ item.sender_profile_pic }}" alt="Sender Profile Picture" class="post-profile-pic">
+                <span class="post-email">{{ item.message.sender_email }}</span>
+                {% else %}
+                <!-- Show receiver's profile picture if the current user is the sender -->
+                <img src="{{ item.receiver_profile_pic }}" alt="Receiver Profile Picture" class="post-profile-pic">
+                <span class="post-email">{{ item.message.receiver_email }}</span>
+                {% endif %}
+            </div>
+            <span class="post-date">{{ item.message.date }}</span>
+        </div>
+        <form method="POST" action="{% url 'message_detail' %}" id="form-{{ item.message.id }}">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ item.message.id }}">
+            <a href="#" class="post-subject" onclick="document.getElementById('form-{{ item.message.id }}').submit();">
+                {{ item.message.subject }}
+            </a>
+        </form>
+        
+    </div>
+    {% endfor %}
+</div>
+
+
+
+{% endblock %}

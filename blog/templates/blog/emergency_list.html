@@ -1,0 +1,140 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+{% load static %}
+<head>
+    <style>
+        .post-content-wrapper {
+            display: grid;
+            justify-content: center;
+            align-items: flex-start;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 4%;
+            margin: auto;
+            overflow: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: scroll;
+            gap: 15px; /* Reduced spacing between cards */
+        }
+
+        .post-card {
+            width: 500px;
+            padding: 15px; /* Reduced padding inside the card */
+            border-radius: 15px;
+            background: rgba(0, 50, 50, 0.85);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5); /* Slightly reduced shadow */
+            color: #00ff00;
+            text-align: left;
+            font-family: 'Poppins', Arial, sans-serif;
+            animation: postFadeIn 1s ease-in-out;
+        }
+
+        .post-title {
+            font-size: 20px; /* Slightly reduced font size */
+            font-weight: bold;
+            margin-bottom: 10px; /* Reduced spacing below title */
+            color: #b5ffb5;
+            text-align: center;
+        }
+
+        .post-content {
+            font-size: 16px;
+            margin-bottom: 5px; /* Reduced spacing between content lines */
+            color: #c6ffc6;
+            word-wrap: break-word; /* Ensure long text wraps to the next line */
+            white-space: pre-wrap; /* Preserve formatting for multi-line text */
+        }
+
+        .post-content strong {
+            color: #00ff00; /* Green color for all titles */
+        }
+
+        .post-profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #00ff00;
+            margin-right: 10px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .post-action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #00ff00;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .post-action-button:hover {
+            background: rgba(0, 255, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .problem-content {
+            white-space: pre-wrap; /* Preserve formatting for multi-line problems */
+            word-wrap: break-word; /* Ensure long text wraps within the container */
+        }
+    </style>
+</head>
+<div class="post-content-wrapper">
+    <h2 class="post-title">Emergency Messages</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="post-card">
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    {% if message.sender_role == 'student' %}
+                        {% if message.sender.student_profile and message.sender.student_profile.image %}
+                            <img src="{{ message.sender.student_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                        {% endif %}
+                    {% elif message.sender_role == 'teacher' or message.sender_role == 'doctor' %}
+                        {% if message.sender.teacher_profile and message.sender.teacher_profile.image %}
+                            <img src="{{ message.sender.teacher_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                        {% endif %}
+                    {% endif %}
+                    <div>
+                        <p class="post-content"><strong>Sender:</strong> {{ message.sender.username }}</p>
+                        <p class="post-content"><strong>Role Number:</strong> {{ message.sender.roll_number }}</p>
+                    </div>
+                </div>
+                <p class="post-content"><strong>Problem:</strong> <span class="problem-content">{{ message.problem }}</span></p>
+                <p class="post-content"><strong>Status:</strong> {{ message.get_status_display }}</p>
+                {% if message.reply %}
+                    <p class="post-content"><strong>Reply:</strong> {{ message.reply }}</p>
+                    <p class="post-content"><strong>Resolved by:</strong> {{ message.resolved_by.username }}</p>
+                    <p class="post-content"><strong>Resolved time:</strong> {{ message.resolved_time }}</p>
+                {% endif %}
+                {% if can_resolve and not message.reply %}
+                    {% if userb != message.sender.username %}
+                    <div class="post-actions">
+                        <form method="POST" action="{% url 'resolve_msg' %}" id="form-{{ message.id }}">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{ message.id }}">
+                            <a href="#" class="post-action-button" onclick="document.getElementById('form-{{ message.id }}').submit();">
+                                Resolve
+                            </a>
+                        </form>
+                        
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="post-content">No emergency messages to display.</p>
+    {% endif %}
+</div>
+{% endblock %}

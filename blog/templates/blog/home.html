@@ -1,0 +1,367 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falling Hospital Cross Animation with Text</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #001f1f, #005f5f);
+            overflow: hidden; 
+            scrollbar-color: #00ff00 rgba(0, 50, 50, 0.9);
+        }
+
+        .navbar-custom {
+            background-color: transparent; /* Make the navbar transparent */
+            box-shadow: 0 0 10px green; /* Add glow effect */
+            backdrop-filter: blur(5px);
+        }
+
+        .navbar-dark .navbar-nav .nav-link {
+            color: white; /* Navbar text color */
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #00ff00; /* Glow green on hover */
+            text-shadow: 0 0 20px #00ff00;
+        }
+
+        .navbar-dark .dropdown-menu {
+            background-color: #001f1f; /* Match dropdown background with body */
+            border: 1px solid #00ff00; /* Green border */
+        }
+
+        .navbar-dark .dropdown-item {
+            color: #00ff00; /* Dropdown item color */
+        }
+
+        .navbar-dark .dropdown-item:hover {
+            background-color: transparent; /* Match with background */
+            color: #00ff00; /* Glow green on hover */
+            text-shadow: 0 0 20px #00ff00;
+        }
+
+        .content-wrapper {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            margin-top: 56px; /* Adjust for the navbar height */
+        }
+
+        #line path {
+            stroke-dasharray: 1564;
+            stroke-dashoffset: 1564;
+            animation: line-anim 4s linear infinite;
+            fill: none;
+            stroke: #00ff00;
+            stroke-width: 2;
+            filter: drop-shadow(0 0 5px #00ff00);
+        }
+
+        @keyframes line-anim {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .falling-text {
+            position: absolute;
+            font-size: 24px;
+            color: #00ff00;
+            animation: fall 5s linear infinite;
+            filter: drop-shadow(0 0 5px #00ff00);
+            font-weight: bold;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -10%;
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+
+        .text1 { left: 10%; animation-duration: 6s; }
+        .text2 { left: 30%; animation-duration: 4.5s; }
+        .text3 { left: 50%; animation-duration: 5.5s; }
+        .text4 { left: 70%; animation-duration: 6s; }
+        .text5 { left: 90%; animation-duration: 5s; }
+
+        /* Notification bell */
+        .notification-bell {
+            position: relative;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+        }
+
+        /* Search bar adjustments */
+        .form-control {
+            width: 300px; /* Set a fixed width for the search bar */
+            transition: width 0.3s ease;
+        }
+
+        /* Green glow effect for search button */
+        .btn-outline-light {
+            transition: color 0.3s, background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-outline-light:hover {
+            background-color: #00ff00; /* Green background on hover */
+            color: #001f1f; /* Change text color to dark */
+            box-shadow: 0 0 10px #00ff00; /* Glow effect */
+        }
+        
+            /* Navbar styles */
+            .navbar-custom {
+                background-color: transparent;
+                box-shadow: 0 0 10px green;
+                backdrop-filter: blur(5px);
+            }
+        
+            
+        
+            .navbar-dark .navbar-nav .nav-link:hover {
+                color: #00ff00;
+                text-shadow: 0 0 20px #00ff00;
+            }
+        
+            /* Dropdown styles */
+            .dropdown-menu {
+                display: none;
+                position: absolute;
+                background-color: #001f1f;
+                border: 1px solid #00ff00;
+                padding: 10px;
+                margin-top: 10px;
+                border-radius: 5px;
+            }
+        
+            
+        
+            
+        
+
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top navbar-dark">
+        <div class="container-fluid">
+            <div class="navbar-brand" >HealHeaven</div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    {% if user.is_authenticated %}
+
+                    <!-- Dropdown for Posts -->
+                    <<li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="postsDropdown">
+                            Posts
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="postsDropdown">
+                            <a class="dropdown-item" href="{% url 'create_post' %}">Create Post</a>
+                            <a class="dropdown-item" href="{% url 'myposts' %}">My Posts</a>
+                            <a class="dropdown-item" href="{% url 'post' %}">All Posts</a>
+                        </div>
+                    </li>
+                    
+
+                    <!-- Dropdown for Messages -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Messages
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="messagesDropdown">
+                            <a class="dropdown-item" href="{% url 'send_message' %}">Send Message</a>
+                            <a class="dropdown-item" href="{% url 'message_list' %}">Messages</a>
+                            
+                        </div>
+                    </li>
+
+                    <!-- Dropdown for Emergency -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="emergencyDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Emergency
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="emergencyDropdown">
+                            <a class="dropdown-item" href="{% url 'send_emergency_message' %}">Emergency Message Sent</a>
+                            <a class="dropdown-item" href="{% url 'emergency_list' %}">Emergency Message list</a>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'chat' %}">Chatbot</a></li>
+
+                    <!-- Profile Link -->
+                    {% if request.user.student_profile.role == "student" %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'student_profile' %}">Student Profile</a></li>
+                    {% elif request.user.teacher_profile.role == "teacher" %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'teacher_profile' %}">Teacher Profile</a></li>
+                    {% elif request.user.teacher_profile.role == "doctor" %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'teacher_profile' %}">Doctor Profile</a></li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+               
+                  
+                <!-- Search Bar -->
+                <form class="d-flex me-3" style="flex-grow: 1; justify-content: flex-end; gap: 2px;" method="POST" action="{% url 'search' %}">
+                    {% csrf_token %}
+                    <input class="form-control me-2" name="query" style="width: fit-content;" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-light" style="padding-left: 2%;" type="submit">Search</button>
+                </form>
+
+                <!-- Notification Bell -->
+                <div class="notification-bell me-3" style="padding-left: 2%;">
+                    <i class="fa fa-bell" style="color: white; font-size: 1.5rem;"></i>
+                    <span class="notification-count" id="notificationCount">0</span>
+                </div>
+              
+
+                <!-- Login/Logout -->
+                <ul class="navbar-nav" style="padding-left: 1%;">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+   
+    
+
+    <div class="content-wrapper">
+        <svg id="line" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 497 111">
+            <defs>
+                <style>.cls-1 {fill: none;}</style>
+            </defs>
+            <path class="cls-1" d="M52.5,176.5l5.21-6.94a1.07,1.07,0,0,1,1.66-.07l5.75,6.57a1.26,1.26,0,0,0,1,.44H77.44a2.19,2.19,0,0,0,2.19-2.06L84.5,95.5l4.82,104.12a.45.45,0,0,0,.89.06l4.22-22.81a.45.45,0,0,1,.44-.37h22.91A1.87,1.87,0,0,0,119,176l14.32-13.43a1.27,1.27,0,0,1,2,.28l7.79,13a1.37,1.37,0,0,0,1.18.67h39.56a1.35,1.35,0,0,0,1.06-.53l5.27-7a.44.44,0,0,1,.69,0l6.28,7.17a1.21,1.21,0,0,0,.91.41h12a.45.45,0,0,0,.45-.42l5-79.58,4.82,102.25a.45.45,0,0,0,.89.06l4.22-21.95a.44.44,0,0,1,.44-.36H289.5c2,0,28,2,18,10-5,4-27.35-18.65-36-43v0c-7-26,24-33,42-4,20,30-5,40,2,3a.22.22,0,0,0,0-.08c.05-11.59,20.5-50.58,36.27-28.5a29.89,29.89,0,0,1,5.15,21c-4.29,34.9-30.91,58.91-36.42,63.5-6,5-12-5,0-15,11.5-9.58,37.68-17.33,49.53-15.32,1.21.2,2.41.39,3.62.51,12.47,1.21,29.16,4.84,36.2,9.37a.45.45,0,0,0,.7-.34L415.5,98.5l6,106,4.81-25a1.23,1.23,0,0,1,1.21-1H447a4,4,0,0,0,2.69-1l15.06-13.39a2,2,0,0,1,3,.47l7.08,11.8a2.37,2.37,0,0,0,2,1.14h37.8a1.63,1.63,0,0,0,1.35-.72l4.79-7.18a1,1,0,0,1,1.61-.11l7,7.86a.41.41,0,0,0,.33.15h11.62a1.24,1.24,0,0,0,1.25-1.17L547.5,98.5" transform="translate(-51.5 -94.5)"/>
+        </svg>
+
+        <!-- Falling text elements -->
+        <div class="falling-text text1">Be Safe</div>
+        <div class="falling-text text2">Be Safe</div>
+        <div class="falling-text text3">Be Safe</div>
+        <div class="falling-text text4">Be Careful</div>
+        <div class="falling-text text5">Be Careful</div>
+        
+        {% block content %}
+        {% endblock %}
+    </div>
+    
+    <div id="response"></div>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-wXySnMStW53GQo0u0VWTFTNxt9Uw9ZPZ2s1Ifz7nYUSsH5E7YtXXP6v7i3WJqYlV" crossorigin="anonymous"></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-wXySnMStW53GQo0u0VWTFTNxt9Uw9ZPZ2s1Ifz7nYUSsH5E7YtXXP6v7i3WJqYlV" crossorigin="anonymous"></script>
+
+     <script>
+        
+            function updateNotificationCount() {
+                fetch("{% url 'notification_count' %}", { 
+                    method: 'GET', 
+                    credentials: 'same-origin' 
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the notification count in the UI
+                    const notificationCountElement = document.getElementById("notificationCount");
+                    notificationCountElement.textContent = data.total_count;
+                })
+                .catch(error => console.error("Error fetching notification count:", error));
+            }
+        
+            // Call the function periodically to keep the count updated
+            setInterval(updateNotificationCount, 30000); // Update every 30 seconds
+            updateNotificationCount(); // Initial call
+        
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    
+            dropdownToggles.forEach((toggle) => {
+                const parent = toggle.closest('.dropdown');
+                const menu = parent.querySelector('.dropdown-menu');
+    
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const isVisible = menu.style.display === 'block';
+                    closeAllDropdowns(); // Close other dropdowns
+                    menu.style.display = isVisible ? 'none' : 'block';
+                });
+    
+                // Close dropdown if clicked outside
+                document.addEventListener('click', (e) => {
+                    if (!parent.contains(e.target)) {
+                        menu.style.display = 'none';
+                    }
+                });
+            });
+    
+            function closeAllDropdowns() {
+                document.querySelectorAll('.dropdown-menu').forEach((menu) => {
+                    menu.style.display = 'none';
+                });
+            }
+        });
+
+        function callMsgCalled() {
+          const url = "{% url 'msg_called' %}"; // Django URL tag to call 'msgcalled' view
+    
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", url, true);
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) { // When the request is complete
+              if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText); // Parse JSON response
+                console.log("Response from server:", response);
+    
+                // Update content dynamically without reloading
+                document.getElementById("response").innerText = `Message: ${response.message}`;
+              } else {
+                console.error("Error calling the Django view:", xhr.status);
+              }
+            }
+          };
+          xhr.send();
+        }
+    
+        // Call the function every 1 minute (60,000 ms)
+        setInterval(callMsgCalled, 120000);
+      </script>
+</body>
+</html>

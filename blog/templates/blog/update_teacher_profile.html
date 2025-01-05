@@ -1,0 +1,185 @@
+{% extends 'blog/home.html' %}
+
+{% block content %}
+
+<style>
+    .wrapper-profile {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+    }
+
+    .update-card {
+        width: 600px;
+        height: auto;
+        padding: 16px;
+        background: rgba(0, 50, 50, 0.8);
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        color: #00ff00;
+        font-family: 'Poppins', Arial, sans-serif;
+        animation: fadeIn 2s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile-image-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .profile-image-container img {
+        width: 100px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #00ff00;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+    }
+
+    .form-group {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .form-group label {
+        font-weight: bold;
+        color: #00ff00;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #00ff00;
+        background: rgba(0, 50, 50, 0.8);
+        color: #00ff00;
+        font-family: 'Poppins', Arial, sans-serif;
+        font-size: 14px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #00ff00;
+        box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+    }
+
+    .update-card form input[type="submit"] {
+        background: #00ff00;
+        color: #003232;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        padding: 8px 18px;
+        border-radius: 25px;
+        font-size: 16px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .update-card form input[type="submit"]:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="wrapper-profile">
+    <div class="update-card">
+        <h4>Update Profile</h4>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Profile picture -->
+            <div class="profile-image-container">
+                <img id="profileImage" src="{{ request.user.teacher_profile.image.url }}" alt="Profile Picture">
+                <input type="file" name="image" id="imageInput" accept="image/*">
+            </div>
+
+            <!-- Username -->
+            <div class="form-row">
+                <div class="form-group">
+                    {{ user_form.username.label_tag }}
+                    {{ user_form.username }}
+                    <small style="color: #00ff00; font-size: 12px;">
+                        A valid username may contain only letters, numbers, and the characters @, ., +, -, and _.
+                        Spaces are not allowed.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Roll Number and Department -->
+            <div class="form-row">
+                <div class="form-group">
+                    {{ profile_form.roll_number.label_tag }}
+                    {{ profile_form.roll_number }}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.department.label_tag }}
+                    {{ profile_form.department }}
+                </div>
+            </div>
+
+            <!-- Phone Number and Role -->
+            <div class="form-row">
+                <div class="form-group">
+                    {{ profile_form.phone_number.label_tag }}
+                    {{ profile_form.phone_number }}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.role.label_tag }}
+                    {{ profile_form.role }}
+                </div>
+            </div>
+
+            <input type="submit" value="Update Profile">
+        </form>
+    </div>
+</div>
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const profileImage = document.getElementById('profileImage');
+
+    imageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                profileImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+{% endblock %}

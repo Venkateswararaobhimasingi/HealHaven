@@ -1,0 +1,257 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+<style>
+    /* Popup Notification Styles */
+    .popup-notification {
+        position: fixed;
+        top: 10px; /* Close to the navbar */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%) translateY(-50px); /* Slide-in animation from above */
+        background-color: rgba(0, 50, 50, 0.9);
+        color: #00ff00;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+        z-index: 2000; /* Ensure above navbar and other elements */
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .popup-notification.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0); /* Slide into view */
+    }
+
+    .popup-notification.error {
+        background-color: rgba(50, 0, 0, 0.9);
+        color: #ff0000;
+    }
+
+    .popup-notification.success {
+        background-color: rgba(0, 50, 0, 0.9);
+        color: #00ff00;
+    }
+
+    /* Center the card and maintain the background animation */
+    .wrapper-ln {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 100; /* Ensures it stays above the animation */
+        width: 100%;
+        height: 100%;
+    }
+
+    .card-switch-ln {
+        position: relative;
+        width: 350px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        background: rgba(0, 50, 50, 0.5);
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+    }
+
+    .toggle-container-ln {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        gap: 10px; /* Adjust spacing between the icons and toggle */
+    }
+
+    .toggle-ln {
+        position: relative;
+        width: 50px;
+        height: 25px;
+        background: #00ff00;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .toggle-circle-ln {
+        width: 20px;
+        height: 20px;
+        background: #003333;
+        border-radius: 50%;
+        position: absolute;
+        top: 2.5px;
+        left: 5px;
+        transition: 0.3s;
+    }
+
+    .toggle-ln.active .toggle-circle-ln {
+        transform: translateX(25px);
+    }
+
+    .icon-container-ln {
+        font-size: 20px; /* Smaller font size */
+        color: #00ff00;
+    }
+
+    .flip-card__inner-ln {
+        width: 100%;
+        height: 400px;
+        position: relative;
+        perspective: 1000px;
+        text-align: center;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+    }
+
+    .flip-card__front-ln,
+    .flip-card__back-ln {
+        padding: 20px;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        border-radius: 15px;
+        background: rgba(0, 50, 50, 0.8);
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+        color: #00ff00;
+    }
+
+    .flip-card__back-ln {
+        transform: rotateY(180deg);
+    }
+
+    .flip-card__input-ln {
+        margin-bottom: 15px;
+        padding: 10px;
+        width: calc(100% - 20px);
+        border-radius: 5px;
+        border: 2px solid #00ff00;
+        background: rgba(0, 0, 0, 0.6);
+        color: #00ff00;
+        outline: none;
+    }
+
+    .flip-card__btn-ln {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 2px solid #00ff00;
+        background-color: rgba(0, 50, 50, 0.8);
+        color: #00ff00;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+
+    .options {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 2px 10px;
+    }
+
+    .options a {
+        color: #00ff00;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s;
+    }
+
+    .options a:hover {
+        color: #00ffaa;
+        text-decoration: underline;
+    }
+
+    /* Flip the card when toggle is active */
+    .flip-card__inner-ln.flipped {
+        transform: rotateY(180deg);
+    }
+</style>
+
+<div class="wrapper-ln">
+    <div class="card-switch-ln">
+        <div class="toggle-container-ln">
+            <div class="icon-container-ln" id="student-icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="toggle-ln" id="toggle-switch">
+                <div class="toggle-circle-ln"></div>
+            </div>
+            <div class="icon-container-ln" id="teacher-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+        </div>
+
+        <div class="flip-card__inner-ln" id="flip-card">
+            <!-- Student Login Card -->
+            <div class="flip-card__front-ln">
+                <div class="title">Student Login</div>
+                <form class="flip-card__form-ln" action="{% url 'student_login' %}" method="POST">
+                    {% csrf_token %}
+                    <input class="flip-card__input-ln" name="email" placeholder="Email" type="email">
+                    <input class="flip-card__input-ln" name="password" placeholder="Password" type="password">
+                    <div class="options">
+                        <a href="#" class="forgot-password" style="padding-bottom: 2px; text-align:right">Forgot Password?</a>
+                    </div>
+                    <button class="flip-card__btn-ln">Login</button>
+                    <div class="options">
+                        <a href="{% url 'register' %}" class="register">New to here? Register</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Teacher/Doctor Signup Card -->
+            <div class="flip-card__back-ln">
+                <div class="title">Teacher/Doctor Signup</div>
+                <form class="flip-card__form-ln" action="{% url 'teacher_login' %}" method="POST">
+                    {% csrf_token %}
+                    <input class="flip-card__input-ln" name="email" placeholder="Email" type="email">
+                    <input class="flip-card__input-ln" name="password" placeholder="Password" type="password">
+                    <div class="options">
+                        <a href="#" class="forgot-password" style="padding-bottom: 2px; text-align:right">Forgot Password?</a>
+                    </div>
+                    <button class="flip-card__btn-ln">Signup</button>
+                    <div class="options">
+                        <a href="{% url 'register' %}" class="register">New to here? Register</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popup Notification -->
+<div id="popup" class="popup-notification"></div>
+
+<script>
+    // Toggle flip card logic
+    document.getElementById('toggle-switch').addEventListener('click', function () {
+        const toggleSwitch = this;
+        const flipCard = document.getElementById('flip-card');
+        toggleSwitch.classList.toggle('active');
+        flipCard.classList.toggle('flipped');
+    });
+
+    // Function to display popup notification
+    function showPopup(message, isError = false) {
+        const popup = document.getElementById('popup');
+        popup.textContent = message;
+        popup.className = 'popup-notification ' + (isError ? 'error' : 'success');
+        popup.classList.add('show');
+
+        setTimeout(() => {
+            popup.classList.remove('show');
+        }, 3000); // Hide popup after 3 seconds
+    }
+
+    // Check if Django messages exist
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if messages %}
+        {% for message in messages %}
+        showPopup("{{ message }}", "{{ message.tags }}" === 'error');
+        {% endfor %}
+        {% endif %}
+    });
+</script>
+{% endblock %}

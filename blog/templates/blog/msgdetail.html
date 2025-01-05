@@ -1,0 +1,79 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+
+<head>
+    <style>
+        .message-card {
+            max-width: 600px;
+            width: 400px;
+            position: absolute;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(0, 50, 50, 0.9);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            color: #00ff00;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .message-profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #00ff00;
+            margin-right: 15px;
+        }
+
+        .message-email {
+            font-size: 14px;
+            color: #a4f9a4;
+        }
+
+        .message-content {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .reply-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            color: #00ff00;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .reply-button:hover {
+            background: rgba(0, 255, 0, 0.4);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<div class="message-card">
+    <div class="message-header">
+        {% if message.receiver_author == request.user %}
+        <img src="{{ sender_profile_pic }}" alt="Sender Profile Picture" class="message-profile-pic">
+        <span class="message-email">{{ message.sender_email }}</span>
+        {% else %}
+        <img src="{{ receiver_profile_pic }}" alt="Receiver Profile Picture" class="message-profile-pic">
+        <span class="message-email">{{ message.receiver_email }}</span>
+        {% endif %}
+    </div>
+    <div class="message-content">
+        <h3>Subject: {{ message.subject }}</h3>
+        <p>{{ message.content }}</p>
+    </div>
+    <a href="{% url 'send_message' %}" class="reply-button">Reply</a>
+</div>
+
+{% endblock %}

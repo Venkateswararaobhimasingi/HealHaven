@@ -1,0 +1,99 @@
+{% extends 'blog/home.html' %}
+
+{% block content %}
+    <style>
+        /* Center the card and maintain the background animation */
+        .create-post-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 54%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100; /* Ensures it stays above the animation */
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Create Post Card Style (Reduced width and height) */
+        .create-post-card {
+            position: relative;
+            width: 80%; /* Reduced width to 80% */
+            max-width: 500px; /* Maximum width is 500px */
+            padding: 20px;
+            backdrop-filter: blur(10px); /* Optional: Blur effect for background */
+            border-radius: 15px;
+            background: rgba(0, 50, 50, 0.8); /* Transparent green background */
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); /* Green glow */
+            color: #00ff00;
+            text-align: left;
+            font-family: 'Poppins', Arial, sans-serif;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Animation for fade-in effect */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Create Post Form Styling */
+        .create-post-form {
+            width: 100%;
+            padding: 20px;
+            background-color: rgba(0, 50, 50, 0.7); /* Transparent background */
+            border-radius: 10px;
+            color: #00ff00;
+        }
+
+        /* Form input and textarea styling */
+        .create-post-form input,
+        .create-post-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #00ff00;
+            background-color: rgba(0, 50, 50, 0.3); /* Lightly transparent background */
+            color: #00ff00;
+        }
+
+        /* Submit button styling */
+        .create-post-form input[type="submit"] {
+            background-color: rgba(0, 255, 0, 0.6);
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .create-post-form input[type="submit"]:hover {
+            background-color: rgba(0, 255, 0, 0.8);
+        }
+
+        /* Label styling */
+        .create-post-form label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+
+    <!-- Create Post Page -->
+    <div class="create-post-wrapper">
+        <div class="create-post-card">
+            <h2>Create a New Post</h2>
+            <form method="POST" class="create-post-form">
+                {% csrf_token %}
+                {{ form.as_p }}  <!-- Render the form fields automatically -->
+                <input type="submit" value="Publish Post">
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,246 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+<style>
+    /* Popup Notification Styles */
+    .popup-notification {
+        position: fixed;
+        top: 10px; /* Close to the navbar */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%) translateY(-50px); /* Slide-in animation from above */
+        background-color: rgba(0, 50, 50, 0.9);
+        color: #00ff00;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+        z-index: 2000; /* Ensure above navbar and other elements */
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .popup-notification.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0); /* Slide into view */
+    }
+
+    .popup-notification.error {
+        background-color: rgba(50, 0, 0, 0.9);
+        color: #ff0000;
+    }
+
+    .popup-notification.success {
+        background-color: rgba(0, 50, 0, 0.9);
+        color: #00ff00;
+    }
+
+    /* Wrapper Styles */
+    .wrapper-register {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+    }
+
+    .card-register {
+        position: relative;
+        width: 500px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        background: rgba(0, 50, 50, 0.5);
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+    }
+
+    .flip-card-register__inner {
+        width: 100%;
+        height: 500px;
+        position: relative;
+        perspective: 1000px;
+        text-align: center;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+    }
+
+    .flip-card-register__front,
+    .flip-card-register__back {
+        padding: 20px;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        border-radius: 15px;
+        background: rgba(0, 50, 50, 0.8);
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+        color: #00ff00;
+    }
+
+    .flip-card-register__back {
+        transform: rotateY(180deg);
+    }
+
+    .flip-card-register__input,
+    .flip-card-register__btn {
+        margin-bottom: 15px;
+        width: 80%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 2px solid #00ff00;
+        background: rgba(0, 0, 0, 0.6);
+        color: #00ff00;
+        text-align: center;
+        outline: none;
+    }
+
+    .flip-card-register__btn {
+        background-color: rgba(0, 50, 50, 0.8);
+        cursor: pointer;
+    }
+
+    .flip-card-register__label {
+        text-align: left;
+        width: 80%;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .toggle-container-register {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    .toggle-register {
+        position: relative;
+        width: 50px;
+        height: 25px;
+        background: #00ff00;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .toggle-circle-register {
+        width: 20px;
+        height: 20px;
+        background: #003333;
+        border-radius: 50%;
+        position: absolute;
+        top: 2.5px;
+        left: 5px;
+        transition: 0.3s;
+    }
+
+    .toggle-register.active .toggle-circle-register {
+        transform: translateX(25px);
+    }
+
+    .icon-container-register {
+        font-size: 20px;
+        color: #00ff00;
+    }
+
+    .flip-card-register__inner.flipped {
+        transform: rotateY(180deg);
+    }
+</style>
+
+<div class="wrapper-register" style="padding-top:5% ;">
+    <div class="card-register">
+        <div class="toggle-container-register">
+            <div class="icon-container-register"><i class="fas fa-user-graduate"></i></div>
+            <div class="toggle-register" id="toggle-register">
+                <div class="toggle-circle-register"></div>
+            </div>
+            <div class="icon-container-register"><i class="fas fa-chalkboard-teacher"></i></div>
+        </div>
+
+        <div class="flip-card-register__inner" id="flip-card-register">
+            <!-- Student Registration -->
+            <div class="flip-card-register__front">
+                <form action="{% url 'register_student' %}" method="POST">
+                    {% csrf_token %}
+                    <label class="flip-card-register__label" for="student-name">Name</label>
+                    <input id="student-name" class="flip-card-register__input" name="name" placeholder="Enter Your Name" type="text" required>
+
+                    <label class="flip-card-register__label" for="student-email">Email</label>
+                    <input id="student-email" class="flip-card-register__input" name="email" placeholder="Enter Your Email" type="email" required>
+
+                    <label class="flip-card-register__label" for="student-rollnumber">Roll Number</label>
+                    <input id="student-rollnumber" class="flip-card-register__input" name="rollnumber" placeholder="Enter Your roll number" type="text" required>
+
+                    <label class="flip-card-register__label" for="student-password">Password</label>
+                    <input id="student-password" class="flip-card-register__input" name="password" placeholder="Enter Your Password" type="password" required>
+
+                    <button class="flip-card-register__btn">Register</button>
+                </form>
+            </div>
+
+            <!-- Teacher Registration -->
+            <div class="flip-card-register__back">
+                <form action="{% url 'register_teacher' %}" method="POST">
+                    {% csrf_token %}
+                    <label class="flip-card-register__label" for="teacher-name">Name</label>
+                    <input id="teacher-name" class="flip-card-register__input" name="name" placeholder="Enter Your Name" type="text" required>
+
+                    <label class="flip-card-register__label" for="teacher-email">Email</label>
+                    <input id="teacher-email" class="flip-card-register__input" name="email" placeholder="Enter Your Email" type="email" required>
+                    
+                    <label class="flip-card-register__label" for="teacher-rollnumber">Roll Number</label>
+                    <input id="teacher-rollnumber" class="flip-card-register__input" name="rollnumber" placeholder="Enter Your rollnumber" type="text" required>
+
+                    <label class="flip-card-register__label" for="teacher-password">Password</label>
+                    <input id="teacher-password" class="flip-card-register__input" name="password" placeholder="Enter Your Password" type="password" required>
+
+                    <button class="flip-card-register__btn">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popup Notification -->
+<div id="popup" class="popup-notification"></div>
+
+<script>
+    const toggleRegister = document.getElementById('toggle-register');
+    const flipCardRegister = document.getElementById('flip-card-register');
+    const popup = document.getElementById('popup');
+
+    toggleRegister.addEventListener('click', function () {
+        this.classList.toggle('active');
+        flipCardRegister.classList.toggle('flipped');
+    });
+
+    // Function to display popup notification
+    function showPopup(message, isError = false) {
+        popup.textContent = message;
+        popup.className = 'popup-notification ' + (isError ? 'error' : 'success');
+        popup.classList.add('show');
+
+        setTimeout(() => {
+            popup.classList.remove('show');
+        }, 3000); // Hide popup after 3 seconds
+    }
+
+    // Check if Django messages exist
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if messages %}
+        {% for message in messages %}
+        showPopup("{{ message }}", "{{ message.tags }}" === 'error');
+        {% endfor %}
+        {% endif %}
+    });
+</script>
+{% endblock %}

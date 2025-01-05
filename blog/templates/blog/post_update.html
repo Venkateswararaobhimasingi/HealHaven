@@ -1,0 +1,92 @@
+{% extends 'blog/home.html' %}
+
+{% block content %}
+<style>
+    /* Transparent background overlay */
+    .update-post-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.2); /* Subtle transparency, no blur */
+        z-index: 999; /* Layer below the modal */
+        pointer-events: none; /* Ensure it doesn't block interactions */
+    }
+
+    /* Modal container */
+    .update-post-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        z-index: 1000; /* Above the backdrop */
+        background: rgba(0, 50, 50, 0.95); /* Slightly opaque background for the modal */
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        width: 500px;
+    }
+
+    /* Form styling */
+    .update-post-form {
+        width: 100%;
+        padding: 20px;
+        color: #00ff00;
+        font-family: 'Poppins', Arial, sans-serif;
+    }
+
+    .update-post-form label {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #a4f9a4;
+    }
+
+    .update-post-form input,
+    .update-post-form textarea,
+    .update-post-form button {
+        width: 100%;
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #00ff00;
+        background: rgba(0, 255, 0, 0.1);
+        color: #00ff00;
+        font-size: 14px;
+        font-family: 'Poppins', Arial, sans-serif;
+    }
+
+    .update-post-form button {
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s, transform 0.3s;
+    }
+
+    .update-post-form button:hover {
+        background: rgba(0, 255, 0, 0.3);
+        transform: scale(1.05);
+    }
+</style>
+
+<!-- Transparent backdrop -->
+<div class="update-post-backdrop"></div>
+
+<!-- Modal container -->
+<div class="update-post-wrapper">
+    <form class="update-post-form" method="post" action="{% url 'post_update'%}">
+        {% csrf_token %}
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title" value="{{ post.title }}" required>
+
+        <label for="content">Content</label>
+        <textarea name="content" id="content" rows="5" required>{{ post.content }}</textarea>
+
+        <button type="submit" name="id" value="{{ post.id }}">Update Post</button>
+    </form>
+</div>
+{% endblock %}

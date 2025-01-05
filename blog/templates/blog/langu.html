@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Form Submission</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <style>
+            .submit-text {
+                color: #4CAF50;
+                font-size: 20px;
+                font-weight: bold;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+
+            .submit-text:hover {
+                color: #45a049;
+            }
+        </style>
+    </head>
+    <body>
+        <form method="post" action="{% url 'home' %}" id="myForm">
+            {% csrf_token %}
+            <!-- Hidden input field to carry the 'name' value -->
+            <input type="hidden" name="name" id="nameField" value="">
+
+            <!-- The text that acts as a submit button -->
+            <span class="submit-text" onclick="submitForm()">hi</span>
+        </form>
+
+        <script>
+            function submitForm() {
+                // Set the value of the hidden input field before submitting
+                document.getElementById('nameField').value = 'hi';
+                // Submit the form
+                document.getElementById('myForm').submit();
+            }
+        </script>
+    </body>
+</html>

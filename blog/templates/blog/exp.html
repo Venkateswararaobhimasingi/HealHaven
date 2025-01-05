@@ -1,0 +1,190 @@
+{% extends 'blog/home.html' %}
+
+{% block content %}
+    <style>
+        /* Wrapper for post cards */
+        .post-content-wrapper {
+            display: grid;
+            flex-direction: column; /* Stack cards vertically */
+            justify-content: center; /* Center vertically */
+            align-items: center; /* Center horizontally */
+            position: absolute; /* Absolute positioning */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+             overflow: auto;/* Enable scrolling */
+            padding: 70px; /* Add padding */
+            box-sizing: border-box; /* Ensure padding doesn't overflow */
+        }
+
+        /* Post card styling */
+        .post-card {
+            width: 500px;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(0, 50, 50, 0.7);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            color: #00ff00;
+            text-align: left;
+            font-family: 'Poppins', Arial, sans-serif;
+            animation: postFadeIn 1s ease-in-out;
+            margin-bottom: 20px;
+        }
+
+        /* Animation for fade-in effect */
+        @keyframes postFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Profile picture styling */
+        .post-profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #00ff00;
+            margin-right: 10px;
+        }
+
+        /* Post header */
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-username {
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: underline;
+            color: #00ff00;
+        }
+
+        .post-date {
+            font-size: 14px;
+            color: #a4f9a4;
+        }
+
+        /* Post title */
+        .post-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 5px 0;
+            color: #b5ffb5;
+        }
+
+        /* Post content */
+        .post-content {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #c6ffc6;
+        }
+
+        /* Action buttons */
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .post-action-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #00ff00;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .post-action-button:hover {
+            background: rgba(0, 255, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .post-action-button svg {
+            margin-right: 5px;
+            font-size: 16px;
+        }
+    </style>
+
+    <!-- Main Container for Centered Cards -->
+    <div class="post-content-wrapper">
+        <form method="post" action="{% url 'post_detail' %}" id="myForm">
+            {% csrf_token %}
+        {% for post in posts %}
+            <div class="post-card">
+                <div class="post-header">
+                    {% if post.role == 'student' %}
+                        <img src="{{ post.author.student_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                    {% elif post.role == 'teacher' or post.role == 'doctor' %}
+                        <img src="{{ post.author.teacher_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                    {% endif %}
+                    
+                        <!-- Hidden input field to carry the 'name' value -->
+                        <input type="hidden" name="name" id="nameField" value="">
+                    <div class="post-user-details">
+                        <span class="post-username">{{ post.author.username }} ({{ post.role }})</span>
+                        <span class="post-date">{{ post.date_posted|date:"F j, Y" }}</span>
+                    </div>
+                    
+                </div>
+
+                <div class="post-title" onclick="submitForm('{{ post.title }}')">{{ post.title }}</div>
+
+                <div class="post-content">
+                    {{ post.content }}
+                </div>
+
+                <div class="post-actions">
+                    <button class="post-action-button" onclick="likePost()">
+                        👍 Like <span id="like-count-{{ post.id }}">0</span>
+                    </button>
+                    <button class="post-action-button" onclick="dislikePost()">
+                        👎 Dislike <span id="dislike-count-{{ post.id }}">0</span>
+                    </button>
+                    <button class="post-action-button" onclick="replyPost()">💬 Reply</button>
+                </div>
+            </div>
+        {% endfor %}
+    </form>
+    </div>
+
+    <script>
+        function likePost() {
+            alert('Liked the post!');
+        }
+
+        function dislikePost() {
+            alert('Disliked the post!');
+        }
+
+        function replyPost() {
+            alert('Reply functionality coming soon!');
+        }
+        <script>
+            function submitForm(title) {
+                // Set the value of the hidden input field before submitting
+                document.getElementById('nameField').value = title;
+                // Submit the form
+                document.getElementById('myForm').submit();
+            }
+        </script>
+    </script>
+
+{% endblock %}

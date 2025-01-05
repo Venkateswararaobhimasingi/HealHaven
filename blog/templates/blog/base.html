@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call Django View</title>
+</head>
+<body>
+  <h1>Calling the Django view every 1 minute</h1>
+  <div id="response"></div>
+
+  <script>
+    function callMsgCalled() {
+      const url = "{% url 'msgcalled' %}"; // Django URL tag to call 'msgcalled' view
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) { // When the request is complete
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText); // Parse JSON response
+            console.log("Response from server:", response);
+
+            // Update content dynamically without reloading
+            document.getElementById("response").innerText = `Message: ${response.message}`;
+          } else {
+            console.error("Error calling the Django view:", xhr.status);
+          }
+        }
+      };
+      xhr.send();
+    }
+
+    // Call the function every 1 minute (60,000 ms)
+    setInterval(callMsgCalled, 10000);
+  </script>
+</body>
+</html>

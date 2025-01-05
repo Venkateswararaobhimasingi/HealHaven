@@ -1,0 +1,194 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+<head>
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+
+        .post-content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .post-card {
+            width: 600px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 50, 50, 0.8);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            color: #00ff00;
+        }
+
+        .post-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #b5ffb5;
+        }
+
+        .post-details p {
+            margin: 5px 0;
+        }
+
+        .post-actions {
+            margin-top: 20px;
+        }
+
+        .response-textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 50, 50, 0.9);
+            color: #c6ffc6;
+            padding: 10px;
+        }
+
+        .post-action-button {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: #00ff00;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            text-align: center;
+            display: inline-block;
+            width: 48%;
+        }
+
+        .post-action-button:disabled {
+            background: rgba(100, 100, 100, 0.5);
+            border-color: rgba(150, 150, 150, 0.5);
+            color: rgba(200, 200, 200, 0.5);
+            cursor: not-allowed;
+        }
+
+        .post-action-button:hover:not(:disabled) {
+            background: rgba(0, 255, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .response-section {
+            margin-top: 30px;
+            padding: 10px;
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            background: rgba(0, 50, 50, 0.9);
+        }
+
+        .response-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #b5ffb5;
+            margin-bottom: 15px;
+        }
+
+        .response-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #00ff00;
+        }
+
+        .response-text {
+            color: #c6ffc6;
+        }
+
+        .response-author {
+            font-size: 14px;
+            font-weight: bold;
+            color: #a4f9a4;
+        }
+
+        .response-time {
+            font-size: 12px;
+            color: #b5ffb5;
+        }
+    </style>
+    <script>
+        function toggleSubmitButtons() {
+            const responseText = document.getElementById("response-text").value.trim();
+            const acceptButton = document.getElementById("accept-button");
+            const rejectButton = document.getElementById("reject-button");
+
+            // Enable buttons only if there's text in the response textarea
+            if (responseText) {
+                acceptButton.disabled = false;
+                rejectButton.disabled = false;
+            } else {
+                acceptButton.disabled = true;
+                rejectButton.disabled = true;
+            }
+        }
+    </script>
+</head>
+
+<div class="post-content-wrapper">
+    <div class="post-card">
+        <h1 class="post-title">Emergency Details</h1>
+        <div class="post-details">
+            <p><b>Sender:</b> {{ emergency.sender.username }} ({{ emergency.sender_role }})</p>
+            <p><b>Receiver Role:</b> {{ emergency.receiver_role }}</p>
+            <p><b>Department:</b> {{ emergency.department }}</p>
+            <p><b>Problem:</b> {{ emergency.problem }}</p>
+            <p><b>Status:</b> {{ emergency.get_status_display }}</p>
+            <p><b>Response:</b> {{ emergency.response }}</p>
+            <p><b>Sent Time:</b> {{ emergency.sent_time }}</p>
+            {% if emergency.resolved_time %}
+            <p><b>Resolved Time:</b> {{ emergency.resolved_time }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Accept/Reject Forms -->
+        <form method="POST" action="{% url 'accept_emergency' emergency.id %}">
+            {% csrf_token %}
+            <textarea 
+                id="response-text" 
+                name="response" 
+                rows="3" 
+                class="response-textarea" 
+                placeholder="Enter your response here..."
+                oninput="toggleSubmitButtons()"
+            ></textarea>
+            <div class="post-actions">
+                <button 
+                    id="accept-button" 
+                    type="submit" 
+                    class="post-action-button" 
+                    disabled
+                >
+                    Accept
+                </button>
+                <button 
+                    id="reject-button" 
+                    formaction="{% url 'reject_emergency' emergency.id %}" 
+                    type="submit" 
+                    class="post-action-button" 
+                    disabled
+                >
+                    Reject
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Response Section -->
+    <div class="response-section">
+        <div class="response-header">Responses:</div>
+        {% for response in responses %}
+        <div class="response-item">
+            <p class="response-text">{{ response.text }}</p>
+            <p class="response-author">By: {{ response.user.username }} ({{ response.user_role }})</p>
+            <p class="response-time">At: {{ response.time }}</p>
+        </div>
+        {% empty %}
+        <p>No responses yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

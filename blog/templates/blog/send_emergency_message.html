@@ -1,0 +1,131 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+<head>
+    <style>
+        .post-content-wrapper {
+            display: grid;
+            flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        overflow: auto;
+        padding: 70px;
+        box-sizing: border-box;
+        gap: 20px;
+            
+        }
+
+        .post-card {
+            width: 500px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 50, 50, 0.85);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            color: #00ff00;
+            text-align: left;
+            font-family: 'Poppins', Arial, sans-serif;
+            animation: postFadeIn 1s ease-in-out;
+        }
+
+        @keyframes postFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #b5ffb5;
+            text-align: center;
+        }
+
+        .post-content {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #c6ffc6;
+        }
+
+        textarea {
+            width: 100%;
+            border: 1px solid rgba(0, 255, 0, 0.5);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 14px;
+            background-color: rgba(0, 50, 50, 0.9);
+            color: #c6ffc6;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            border-color: #00ff00;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .post-action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #00ff00;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .post-action-button:hover {
+            background: rgba(0, 255, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .post-action-button svg {
+            margin-right: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<div class="post-content-wrapper">
+    <div class="post-card">
+        <h2 class="post-title">Send Emergency Message</h2>
+        <form method="POST" action="{% url 'send_emergency_message' %}">
+            {% csrf_token %}
+            <div>
+                <label for="problem" class="post-content"><strong>Describe Your Problem:</strong></label>
+                <textarea name="problem" id="problem" rows="5" required></textarea>
+            </div>
+            <div class="post-actions">
+                <button type="submit" class="post-action-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="16" height="16">
+                        <path d="M5 12l5 5L20 7" stroke="#00ff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Send Message
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

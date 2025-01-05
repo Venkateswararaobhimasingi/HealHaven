@@ -1,0 +1,144 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+<head>
+    <style>
+        .post-content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+           position: absolute;
+            box-sizing: border-box;
+        }
+
+        .post-card {
+            width: 500px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 50, 50, 0.9);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            color: #00ff00;
+            font-family: 'Poppins', Arial, sans-serif;
+            text-align: left;
+        }
+
+        .post-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #b5ffb5;
+            text-align: center;
+        }
+
+        .post-content {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #c6ffc6;
+            line-height: 1.6;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 50, 50, 0.8);
+            color: #00ff00;
+            font-family: 'Poppins', Arial, sans-serif;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+        }
+
+        textarea::placeholder {
+            color: #a5ffa5;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .post-action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #00ff00;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            width: 48%; /* Equal button sizes */
+        }
+
+        .post-action-button:hover {
+            background: rgba(0, 255, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .post-action-button:disabled {
+            background: rgba(0, 50, 50, 0.8);
+            border-color: rgba(0, 255, 0, 0.3);
+            color: rgba(0, 255, 0, 0.5);
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<div class="post-content-wrapper">
+    <div class="post-card">
+        <h2 class="post-title">Resolve Emergency Message</h2>
+        <p class="post-content"><strong>Problem:</strong> {{ message.problem }}</p>
+        <form method="post" action="{% url 'resolve_message' %}">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ message.id }}">
+            <textarea 
+                name="reply" 
+                class="post-content" 
+                id="replyField" 
+                placeholder="Enter your reply here..." 
+                required 
+                oninput="toggleSubmitButtons()"></textarea>
+            <div class="post-actions">
+                <button 
+                    type="submit" 
+                    name="action" 
+                    value="accept" 
+                    id="acceptButton" 
+                    class="post-action-button" 
+                    disabled>
+                    Accept
+                </button>
+                <button 
+                    type="submit" 
+                    name="action" 
+                    value="reject" 
+                    id="rejectButton" 
+                    class="post-action-button" 
+                    disabled>
+                    Reject
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Enable/disable buttons based on reply input
+    function toggleSubmitButtons() {
+        const replyField = document.getElementById("replyField");
+        const acceptButton = document.getElementById("acceptButton");
+        const rejectButton = document.getElementById("rejectButton");
+
+        const isReplyProvided = replyField.value.trim().length > 0;
+        acceptButton.disabled = !isReplyProvided;
+        rejectButton.disabled = !isReplyProvided;
+    }
+</script>
+{% endblock %}

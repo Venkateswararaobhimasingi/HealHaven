@@ -1,0 +1,356 @@
+{% extends 'blog/home.html' %}
+{% block content %}
+<head>
+<style>
+    /* Your existing CSS code here */
+    .post-content-wrapper {
+        display: grid;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        overflow: auto;
+        padding: 70px;
+        box-sizing: border-box;
+        gap: 20px;
+    }
+
+    .post-card {
+        width: 500px;
+        padding: 15px;
+        border-radius: 15px;
+        background: rgba(0, 50, 50, 0.7);
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        color: #00ff00;
+        text-align: left;
+        font-family: 'Poppins', Arial, sans-serif;
+        animation: postFadeIn 1s ease-in-out;
+        margin-bottom: 20px;
+    }
+
+    @keyframes postFadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .post-profile-pic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #00ff00;
+        margin-right: 10px;
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .post-user-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .post-username {
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: underline;
+        color: #00ff00;
+    }
+
+    .post-date {
+        font-size: 14px;
+        color: #a4f9a4;
+    }
+
+    .post-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 5px 0;
+        color: #b5ffb5;
+    }
+
+    .post-content {
+        font-size: 14px;
+        margin-bottom: 15px;
+        color: #c6ffc6;
+    }
+
+    .post-actions {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .post-action-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 255, 0, 0.1);
+        border: 1px solid #00ff00;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #00ff00;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.3s;
+    }
+
+    .post-action-button:hover {
+        background: rgba(0, 255, 0, 0.3);
+        transform: scale(1.05);
+    }
+
+    .post-action-button svg {
+        margin-right: 5px;
+        font-size: 16px;
+    }
+
+    .reply-section {
+        display: none;
+        margin-top: 15px;
+        padding: 10px;
+        background: rgba(0, 50, 50, 0.8);
+        border-radius: 10px;
+    }
+
+    .reply-input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #00ff00;
+        background: rgba(0, 50, 50, 0.9);
+        color: #00ff00;
+        font-family: 'Poppins', Arial, sans-serif;
+        margin-bottom: 10px;
+    }
+
+    .reply-button {
+        background: rgba(0, 255, 0, 0.1);
+        border: 1px solid #00ff00;
+        padding: 8px 12px;
+        border-radius: 10px;
+        color: #00ff00;
+        cursor: pointer;
+    }
+
+    .reply {
+        margin-top: 10px;
+        padding: 8px;
+        background: rgba(0, 100, 100, 0.5);
+        border-radius: 5px;
+        color: #aaffaa;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .reply-profile-pic {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid #00ff00;
+        margin-right: 10px;
+    }
+
+    .reply-content-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .reply-author {
+        font-size: 14px;
+        font-weight: bold;
+        color: #a4f9a4;
+        margin-bottom: 5px;
+    }
+
+    .reply-text {
+        font-size: 13px;
+        color: #c6ffc6;
+    }
+
+    .reply-date {
+        font-size: 12px;
+        color: #b5ffb5;
+    }
+
+
+
+
+
+
+        /* Add your CSS styles here */
+    </style>
+    <script>
+        async function handleAction(url, postId, likeElementId, dislikeElementId) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                    body: JSON.stringify({ id: postId })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById(likeElementId).textContent = data.likes;
+                    document.getElementById(dislikeElementId).textContent = data.dislikes;
+                } else {
+                    const errorData = await response.json();
+                    console.error('Failed to process the action:', errorData.error || response.statusText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function submitForm(formId) {
+            document.getElementById(formId).submit();
+        }
+
+        function toggleReplies(postId) {
+            const replySection = document.getElementById(`reply-section-${postId}`);
+            replySection.style.display = replySection.style.display === 'block' ? 'none' : 'block';
+        }
+
+        async function submitReply(event, postId) {
+            event.preventDefault();
+        
+            const replyContent = document.getElementById(`reply-content-${postId}`).value;
+            const repliesContainer = document.getElementById(`replies-container-${postId}`);
+            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        
+            if (!replyContent.trim()) {
+                alert("Reply content cannot be empty.");
+                return;
+            }
+        
+            try {
+                const response = await fetch("{% url 'add_reply' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": csrfToken,
+                    },
+                    body: new URLSearchParams({
+                        id: postId,
+                        reply_content: replyContent,
+                    }),
+                });
+        
+                if (response.ok) {
+                    const data = await response.json();
+                    const reply = data.reply;
+        
+                    const newReply = document.createElement("div");
+                    newReply.classList.add("reply");
+                    newReply.innerHTML = `
+                        <img src="${reply.author_image}" alt="Profile Picture" class="reply-profile-pic">
+                        <div class="reply-content-wrapper">
+                            <div class="reply-author">${reply.author}</div>
+                            <div class="reply-text">${reply.content}</div>
+                            <div class="reply-date">${reply.date_posted}</div>
+                        </div>
+                    `;
+        
+                    // Prepend the new reply to the top of the container
+                    repliesContainer.prepend(newReply);
+        
+                    // Clear the input field
+                    document.getElementById(`reply-content-${postId}`).value = "";
+                } else {
+                    const errorData = await response.json();
+                    console.error("Error adding reply:", errorData.error);
+                    alert("Failed to add reply.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while adding the reply.");
+            }
+        }
+        
+    </script>
+</head>
+<body>
+
+    <div class="post-content-wrapper">
+        {% if posts.count == 0 %}
+            <h2 style="color: #a4f9a4;">No posts to display.</h2>
+        {% endif %}
+        {% for post in posts %}
+        <div class="post-card">
+            <div class="post-header">
+                {% if post.role == 'student' %}
+                    <img src="{{ post.author.student_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                {% elif post.role == 'teacher' or post.role == 'doctor' %}
+                    <img src="{{ post.author.teacher_profile.image.url }}" alt="Profile Picture" class="post-profile-pic">
+                {% endif %}
+                <div class="post-user-details">
+                    <span class="post-username">{{ post.author.username }} ({{ post.role }})</span>
+                    <span class="post-date">{{ post.date_posted|date:"F j, Y" }}</span>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'post_detail' %}" id="form-{{ post.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="name" value="{{ post.id }}">
+                <div class="post-title" onclick="submitForm('form-{{ post.id }}')">{{ post.title }}</div>
+            </form>
+
+            <div class="post-content">{{ post.content }}</div>
+
+            <div class="post-actions">
+                <button class="post-action-button" 
+                onclick="handleAction('{% url 'like_post' %}', {{ post.id }}, 'like-count-{{ post.id }}', 'dislike-count-{{ post.id }}')">
+                    👍 Like <span id="like-count-{{ post.id }}">{{ post.likes }}</span>
+                </button>
+                <button class="post-action-button" 
+                onclick="handleAction('{% url 'dislike_post' %}', {{ post.id }}, 'like-count-{{ post.id }}', 'dislike-count-{{ post.id }}')">
+                    👎 Dislike <span id="dislike-count-{{ post.id }}">{{ post.dislikes }}</span>
+                </button>
+                <button class="post-action-button" onclick="toggleReplies({{ post.id }})">💬 Reply</button>
+            </div>
+
+            <div class="reply-section" id="reply-section-{{ post.id }}">
+                <form onsubmit="submitReply(event, {{ post.id }})">
+                    {% csrf_token %}
+                    <textarea name="reply_content" id="reply-content-{{ post.id }}" class="reply-input" placeholder="Write your reply..."></textarea>
+                    <button type="submit" class="reply-button">Add Reply</button>
+                </form>
+
+                <div id="replies-container-{{ post.id }}">
+                    {% for reply in post.replies.all|dictsortreversed:"date_posted" %}
+                    <div class="reply">
+                        {% if reply.role == 'student' %}
+                        <img src="{{ reply.author.student_profile.image.url }}" alt="Profile Picture" class="reply-profile-pic">
+                        {% elif reply.role == 'teacher' or post.role == 'doctor' %}
+                        <img src="{{ reply.author.teacher_profile.image.url }}" alt="Profile Picture" class="reply-profile-pic">
+                        {% endif %}
+                        <div class="reply-content-wrapper">
+                            <div class="reply-author">{{ reply.author.username }}</div>
+                            <div class="reply-text">{{ reply.content }}</div>
+                            <div class="reply-date">{{ reply.date_posted|date:"F j, Y, g:i a" }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+
+{% endblock %}
