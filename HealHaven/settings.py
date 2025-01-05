@@ -29,7 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'heal-haven.vercel.app',  # Add your Vercel domain here
+    '.vercel.app',  # Add your Vercel domain here
 ]
 
 
