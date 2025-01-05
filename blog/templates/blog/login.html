@@ -187,12 +187,12 @@
             <!-- Student Login Card -->
             <div class="flip-card__front-ln">
                 <div class="title">Student Login</div>
-                <form class="flip-card__form-ln" action="{% url 'student_login' %}" method="POST">
+                <form class="flip-card__form-ln" action="{% url 'student_login' %}" method="POST">     
                     {% csrf_token %}
                     <input class="flip-card__input-ln" name="email" placeholder="Email" type="email">
                     <input class="flip-card__input-ln" name="password" placeholder="Password" type="password">
                     <div class="options">
-                        <a href="#" class="forgot-password" style="padding-bottom: 2px; text-align:right">Forgot Password?</a>
+                        <a href="{% url 'send_otp' %}" class="forgot-password" style="padding-bottom: 2px; text-align:right">Forgot Password?</a>
                     </div>
                     <button class="flip-card__btn-ln">Login</button>
                     <div class="options">
@@ -209,7 +209,7 @@
                     <input class="flip-card__input-ln" name="email" placeholder="Email" type="email">
                     <input class="flip-card__input-ln" name="password" placeholder="Password" type="password">
                     <div class="options">
-                        <a href="#" class="forgot-password" style="padding-bottom: 2px; text-align:right">Forgot Password?</a>
+                        <a href="{% url 'send_otp' %}" class="forgot-password" style="padding-bottom: 2px; text-align:right">Forgot Password?</a>
                     </div>
                     <button class="flip-card__btn-ln">Signup</button>
                     <div class="options">
