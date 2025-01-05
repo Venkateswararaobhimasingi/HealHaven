@@ -367,7 +367,7 @@ def teacher_profile_view(request):
 
 
 
-
+from .utils import handle_uploaded_file
 
 
 @login_required
@@ -380,7 +380,7 @@ def update_student_profile_view(request):
     profile_form = StudentProfileUpdateForm(instance=student_profile)
 
     # For debugging, check the current profile picture URL
-    print(f"Current Profile Picture URL: {student_profile.image.url}")
+    print(f"Current Profile Picture URL: {student_profile.image.url if student_profile.image else 'No image'}")
 
     if request.method == 'POST':
         # Update forms with submitted data
@@ -407,12 +407,9 @@ def update_student_profile_view(request):
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
-        'simg': student_profile.image.url,
+        'simg': student_profile.image.url if student_profile.image else '/media/default_student_image.jpg',  # Default image if none exists
     }
     return render(request, 'blog/update_student_profile.html', context)
-
-
-
 
 @login_required
 def update_teacher_profile_view(request):
@@ -424,7 +421,7 @@ def update_teacher_profile_view(request):
     profile_form = TeacherProfileUpdateForm(instance=teacher_profile)
 
     # For debugging, check the current profile picture URL
-    print(f"Current Profile Picture URL: {teacher_profile.image.url}")
+    print(f"Current Profile Picture URL: {teacher_profile.image.url if teacher_profile.image else 'No image'}")
 
     if request.method == 'POST':
         # Update forms with submitted data
@@ -451,9 +448,10 @@ def update_teacher_profile_view(request):
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
-        'simg': teacher_profile.image.url,  # Pass the current image URL
-    } 
+        'simg': teacher_profile.image.url if teacher_profile.image else '/media/default_teacher_image.jpg',  # Default image if none exists
+    }
     return render(request, 'blog/update_teacher_profile.html', context)
+
 
 
 
