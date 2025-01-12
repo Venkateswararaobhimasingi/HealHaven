@@ -1,10 +1,12 @@
 {% extends 'blog/home.html' %}
 {% block content %}
 <head>
-<style>
-    /* Your existing CSS code here */
-    .post-content-wrapper {
-        display: grid;
+    <style>
+        /* General Styles */
+        
+    
+        .post-content-wrapper {
+            display: grid;
         flex-direction: column;
         justify-content: center;
         align-items: center;
@@ -18,179 +20,217 @@
         padding: 70px;
         box-sizing: border-box;
         gap: 20px;
-    }
-
-    .post-card {
-        width: 500px;
-        padding: 15px;
-        border-radius: 15px;
-        background: rgba(0, 50, 50, 0.7);
-        box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-        color: #00ff00;
-        text-align: left;
-        font-family: 'Poppins', Arial, sans-serif;
-        animation: postFadeIn 1s ease-in-out;
-        margin-bottom: 20px;
-    }
-
-    @keyframes postFadeIn {
-        from {
-            opacity: 0;
         }
-        to {
-            opacity: 1;
+    
+        .post-card {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(0, 50, 50, 0.7);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            text-align: left;
+            animation: postFadeIn 1s ease-in-out;
         }
-    }
-
-    .post-profile-pic {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 2px solid #00ff00;
-        margin-right: 10px;
-    }
-
-    .post-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-
-    .post-user-details {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .post-username {
-        font-size: 16px;
-        font-weight: bold;
-        text-decoration: underline;
-        color: #00ff00;
-    }
-
-    .post-date {
-        font-size: 14px;
-        color: #a4f9a4;
-    }
-
-    .post-title {
-        font-size: 18px;
-        font-weight: bold;
-        margin: 5px 0;
-        color: #b5ffb5;
-    }
-
-    .post-content {
-        font-size: 14px;
-        margin-bottom: 15px;
-        color: #c6ffc6;
-    }
-
-    .post-actions {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-    }
-
-    .post-action-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0, 255, 0, 0.1);
-        border: 1px solid #00ff00;
-        padding: 8px 12px;
-        border-radius: 10px;
-        font-size: 13px;
-        color: #00ff00;
-        cursor: pointer;
-        transition: background 0.3s, transform 0.3s;
-    }
-
-    .post-action-button:hover {
-        background: rgba(0, 255, 0, 0.3);
-        transform: scale(1.05);
-    }
-
-    .post-action-button svg {
-        margin-right: 5px;
-        font-size: 16px;
-    }
-
-    .reply-section {
-        display: none;
-        margin-top: 15px;
-        padding: 10px;
-        background: rgba(0, 50, 50, 0.8);
-        border-radius: 10px;
-    }
-
-    .reply-input {
-        width: 100%;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #00ff00;
-        background: rgba(0, 50, 50, 0.9);
-        color: #00ff00;
-        font-family: 'Poppins', Arial, sans-serif;
-        margin-bottom: 10px;
-    }
-
-    .reply-button {
-        background: rgba(0, 255, 0, 0.1);
-        border: 1px solid #00ff00;
-        padding: 8px 12px;
-        border-radius: 10px;
-        color: #00ff00;
-        cursor: pointer;
-    }
-
-    .reply {
-        margin-top: 10px;
-        padding: 8px;
-        background: rgba(0, 100, 100, 0.5);
-        border-radius: 5px;
-        color: #aaffaa;
-        display: flex;
-        align-items: flex-start;
-    }
-
-    .reply-profile-pic {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        border: 2px solid #00ff00;
-        margin-right: 10px;
-    }
-
-    .reply-content-wrapper {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .reply-author {
-        font-size: 14px;
-        font-weight: bold;
-        color: #a4f9a4;
-        margin-bottom: 5px;
-    }
-
-    .reply-text {
-        font-size: 13px;
-        color: #c6ffc6;
-    }
-
-    .reply-date {
-        font-size: 12px;
-        color: #b5ffb5;
-    }
-
-
-
-
-
-
-        /* Add your CSS styles here */
+    
+        @keyframes postFadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+    
+        .post-profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #00ff00;
+            margin-right: 10px;
+        }
+    
+        .post-user-details {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        .post-username {
+            font-size: 16px;
+            font-weight: bold;
+            color: #00ff00;
+        }
+    
+        .post-date {
+            font-size: 14px;
+            color: #a4f9a4;
+        }
+    
+        .post-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+            cursor: pointer;
+            color: #b5ffb5;
+        }
+    
+        .post-content {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #c6ffc6;
+        }
+    
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+        }
+    
+        .post-action-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #00ff00;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+    
+        .post-action-button:hover {
+            background: rgba(0, 255, 0, 0.3);
+            transform: scale(1.05);
+        }
+    
+        .reply-section {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 50, 50, 0.8);
+            border-radius: 10px;
+        }
+    
+        .reply-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 50, 50, 0.9);
+            color: #00ff00;
+            font-family: 'Poppins', Arial, sans-serif;
+            margin-bottom: 10px;
+        }
+    
+        .reply-button {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 8px 12px;
+            border-radius: 10px;
+            color: #00ff00;
+            cursor: pointer;
+        }
+    
+        .reply {
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(0, 100, 100, 0.5);
+            border-radius: 5px;
+            color: #aaffaa;
+            display: flex;
+            align-items: flex-start;
+        }
+    
+        .reply-profile-pic {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #00ff00;
+            margin-right: 10px;
+        }
+    
+        .reply-content-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        .reply-author {
+            font-size: 13px;
+            font-weight: bold;
+            color: #a4f9a4;
+            margin-bottom: 5px;
+        }
+    
+        .reply-text {
+            font-size: 13px;
+            color: #c6ffc6;
+        }
+    
+        .reply-date {
+            font-size: 12px;
+            color: #b5ffb5;
+        }
+    
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .post-card {
+                width: 90%;
+                padding: 10px;
+            }
+    
+            .post-profile-pic {
+                width: 35px;
+                height: 35px;
+            }
+    
+            .post-title {
+                font-size: 16px;
+            }
+    
+            .post-content {
+                font-size: 13px;
+            }
+    
+            .post-action-button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+    
+            .reply-input {
+                font-size: 12px;
+            }
+    
+            .reply {
+                padding: 6px;
+            }
+        }
+    
+        @media (max-width: 480px) {
+            .post-card {
+                width: 95%;
+            }
+    
+            .post-username {
+                font-size: 14px;
+            }
+    
+            .post-date {
+                font-size: 12px;
+            }
+    
+            .post-title {
+                font-size: 14px;
+            }
+        }
     </style>
+    
     <script>
         async function handleAction(url, postId, likeElementId, dislikeElementId) {
             try {
