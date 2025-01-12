@@ -79,20 +79,53 @@
             display: flex;
             align-items: center;
         }
-        @media (max-width: 480px) {
-            .profile-card {
-                width: 90%;
-                padding: 15px;
-            }
-            .post-profile-pic {
-                width: 60px;
-                height: 60px;
-            }
-            .status-counts {
-                font-size: 14px;
-            }
-        }
-        
+     @media (max-width: 600px) {
+    .profile-card {
+        width: 90%;
+        padding: 15px;
+    }
+    .post-profile-pic {
+        width: 60px;
+        height: 60px;
+    }
+    .status-counts {
+        font-size: 14px;
+    }
+}
+@media (max-width: 768px) {
+    .profile-card {
+        padding: 15px;
+    }
+
+    .post-profile-pic {
+        width: 50px;
+        height: 50px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .profile-details, .status-counts {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-card {
+        padding: 10px;
+    }
+
+    .post-profile-pic {
+        width: 40px;
+        height: 40px;
+    }
+
+    .profile-details, .status-counts {
+        font-size: 12px;
+    }
+}
     </style>
 </head>
 
@@ -113,7 +146,7 @@
                         {% endif %}
                         <h6>{{ data.profile.user.username }}</h6>
                     </div>
-                    <span>{{ data.type|title }} Profile</span>
+                    <span>({{ data.type|title }})</span>
                 </div>
                 <div class="profile-details">
                     {% if data.type == 'student' %}
