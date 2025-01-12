@@ -88,7 +88,6 @@
         
         @media (max-width: 480px) {
             .post-card {
-                max-width: 430px;
                 width: 100%;
                 padding: 15px;
             }
@@ -102,18 +101,17 @@
                 align-items: flex-start;
             }
             .post-email {
-                gap:3%;
                 font-size: 12px;
             }
             .post-date {
                 font-size: 10px;
-                margin-top: 8px; /* Add spacing between email and date */
+                margin-top: 5px; /* Add spacing between email and date */
                 color: #c6ffc6;
             }
             .post-subject {
                 font-size: 14px;
             }
-        }
+        }        
         
         
     </style>
@@ -136,12 +134,12 @@
                 <!-- Show receiver's profile picture if the current user is the sender -->
                 
                 <img src="{{ item.receiver_profile_pic }}" alt="Receiver Profile Picture" class="post-profile-pic">
-                <br/>
+                
                 <span class="post-email">{{ item.message.receiver_email }}</span>
                 {% endif %}
 
             </div>
-            <br>
+            
 
             <span class="post-date">{{ item.message.date }}</span>
         </div>
