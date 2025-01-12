@@ -106,7 +106,7 @@
             }
             .post-date {
                 font-size: 10px;
-                margin-top: 5px; /* Add spacing between email and date */
+                margin-top: 8px; /* Add spacing between email and date */
                 color: #c6ffc6;
             }
             .post-subject {
@@ -136,6 +136,7 @@
                 <img src="{{ item.receiver_profile_pic }}" alt="Receiver Profile Picture" class="post-profile-pic">
                 <span class="post-email">{{ item.message.receiver_email }}</span>
                 {% endif %}
+
             </div>
             <br>
             <span class="post-date">{{ item.message.date }}</span>
