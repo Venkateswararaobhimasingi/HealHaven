@@ -294,7 +294,7 @@
                             
                         </div>
                     </li>
-
+                    
                     <!-- Dropdown for Emergency -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="emergencyDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -326,11 +326,13 @@
                     <button class="btn btn-outline-light" style="padding-left: 2%;" type="submit">Search</button>
                 </form>
                 <br>
+                {% if user.is_authenticated %}
                 <!-- Notification Bell -->
                 <div class="notification-bell me-3" style="padding-left: 2%;">
                     <i class="fa fa-bell" style="color: white; font-size: 1.5rem;"></i>
                     <span class="notification-count" id="notificationCount">0</span>
                 </div>
+                {% endif %}
               
 
                 <!-- Login/Logout -->
