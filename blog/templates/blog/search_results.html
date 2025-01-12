@@ -129,7 +129,7 @@
     .profile-details, .status-counts {
         font-size: 12px;
     }
-    .h6{
+    .title{
         font-size: 5px;
     }
 }
@@ -151,7 +151,7 @@
                         {% elif data.type == 'teacher' %}
                             <img src="{{ data.profile.user.teacher_profile.image }}" alt="Profile Picture" class="post-profile-pic">
                         {% endif %}
-                        <h6>{{ data.profile.user.username }}</h6>
+                        <div class="title">{{ data.profile.user.username }}</div>
                     </div>
                     <span>({{ data.type|title }})</span>
                 </div>
