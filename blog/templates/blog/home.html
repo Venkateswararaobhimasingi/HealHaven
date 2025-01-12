@@ -205,7 +205,7 @@
     .notification-count {
         font-size: 0.7rem; /* Adjust count size for smaller screens */
         padding: 1px 5px; /* Adjust padding for better appearance */
-        top: 2%;
+        top: 0;
         right: 0;
         transform: translate(50%, -50%); /* Ensure it stays in the correct position */
     }
@@ -274,7 +274,7 @@
                     {% if user.is_authenticated %}
 
                     <!-- Dropdown for Posts -->
-                    <<li class="nav-item dropdown">
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="postsDropdown">
                             Posts
                         </a>
