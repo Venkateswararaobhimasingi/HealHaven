@@ -88,6 +88,7 @@
         
         @media (max-width: 480px) {
             .post-card {
+                max-width: 430px;
                 width: 100%;
                 padding: 15px;
             }
@@ -133,12 +134,15 @@
                 <span class="post-email">{{ item.message.sender_email }}</span>
                 {% else %}
                 <!-- Show receiver's profile picture if the current user is the sender -->
+                
                 <img src="{{ item.receiver_profile_pic }}" alt="Receiver Profile Picture" class="post-profile-pic">
+                <br/>
                 <span class="post-email">{{ item.message.receiver_email }}</span>
                 {% endif %}
 
             </div>
             <br>
+
             <span class="post-date">{{ item.message.date }}</span>
         </div>
         <form method="POST" action="{% url 'message_detail' %}" id="form-{{ item.message.id }}">
