@@ -126,6 +126,17 @@
     .post-card:not(:first-of-type) {
         display: none;
     }
+    @media (max-width: 480px) {
+        .post-card {
+            width: 90%; /* Adjust card width */
+            font-size: 14px;
+        }
+    
+        .post-actions {
+            flex-direction: column; /* Stack buttons vertically */
+        }
+    }
+    
 </style>
 
 <!-- Main Container for Centered Cards -->
