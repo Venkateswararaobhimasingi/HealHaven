@@ -120,7 +120,7 @@ def register_teacher(request):
             # Create the profile with type='teacher'
             TeacherProfileDetails.objects.create(user=user, roll_number=rollnumber,email=email)
 
-            messages.success(request, 'Teacher/Doctor registered successfully as a superuser.')
+            messages.success(request, 'Teacher/Doctor registered successfully.')
             return redirect('login')  # Redirect to the login page or desired page
 
     # Redirect to the registration page if not a POST request or if registration fails
@@ -250,19 +250,19 @@ def send_otp(request):
         )
 
         # Prepare the email content
-        subject = "Your HealHeaven OTP Code"
+        subject = "Your HealHaven OTP Code"
         message = f"""
         Hello,
 
-        Thank you for choosing HealHeaven, your trusted companion for health and wellness. 
+        Thank you for choosing HealHaven, your trusted companion for health and wellness. 
 
         Your OTP code is: {otp_code}. Please use this code to verify your account or reset your password. 
         Remember, this code is valid for 5 minutes only, so act promptly.
 
-        At HealHeaven, we prioritize your well-being and security. If you didn't request this email, please ignore it.
+        At HealHaven, we prioritize your well-being and security. If you didn't request this email, please ignore it.
 
         Stay healthy and happy,
-        The HealHeaven Team
+        The HealHaven Team
         """
         from_email = 'srinu19773@gmail.com'
 
