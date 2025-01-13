@@ -1,0 +1,468 @@
+{% extends 'blog/home.html' %}
+
+{% block content %}
+    <style>
+        .about-wrapper {
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            overflow: auto;
+            padding: 70px;
+            box-sizing: border-box;
+            gap: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .profile-card {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            align-items: center;
+            gap: 20px;
+            background: rgba(0, 50, 50, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            max-width: 800px;
+            animation: slideDown 1.5s ease-out;
+        }
+
+        .profile-pic {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 4px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            animation: scaleUp 1.5s ease-in-out;
+        }
+
+        .profile-name {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #b5ffb5;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #00ff00;
+            animation: typingName 5s steps(26, end) infinite, blink .5s step-end infinite alternate;
+        }
+
+        .contact-details {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #a4f9a4;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #00ff00;
+            animation: typingDetails 6s steps(40, end) infinite, blink .5s step-end infinite alternate;
+        }
+        .contact-detailsph {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #a4f9a4;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #00ff00;
+            animation: typingDetailsph 6s steps(40, end) infinite, blink .5s step-end infinite alternate;
+        }
+
+        .contact-details a {
+            color: #00ff00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-details a:hover {
+            text-decoration: underline;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .social-icon {
+            font-size: 28px;
+            color: #00ff00;
+            text-decoration: none;
+            transition: transform 0.3s, color 0.3s;
+        }
+
+        .social-icon:hover {
+            transform: scale(1.2);
+            color: #b5ffb5;
+        }
+
+        .project-description {
+            text-align: left;
+            max-width: 800px;
+            background: rgba(0, 50, 50, 0.85);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            color: #c6ffc6;
+            line-height: 1.6;
+            animation: slideUp 1.5s ease-out;
+        }
+
+        .project-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #b5ffb5;
+            text-align: center;
+            
+           
+            
+        }
+
+        .key-features {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+
+        .key-features li {
+            margin-bottom: 10px;
+        }
+
+        /* Typing Effect */
+        @keyframes typingName {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes typingDetails {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+        @keyframes typingDetailsph {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes typingProjectTitle {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink {
+            from {
+                border-color: transparent;
+            }
+            to {
+                border-color: #00ff00;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @media (max-width: 768px) {
+    .about-wrapper {
+        padding: 20px; /* Reduce padding for smaller screens */
+        gap: 15px; /* Adjust gap between sections */
+    }
+
+    .profile-card {
+        grid-template-columns: 1fr; /* Stack content vertically */
+        text-align: center; /* Center-align content for better visual balance */
+        padding: 15px; /* Reduce padding */
+    }
+
+    .profile-pic {
+        margin: 0 auto; /* Center the profile picture */
+        width: 120px; /* Adjust size */
+        height: 120px;
+    }
+
+    .profile-name {
+        font-size: 22px; /* Reduce font size for smaller screens */
+    }
+
+    .contact-details {
+        font-size: 14px; /* Reduce font size */
+        line-height: 1.5; /* Adjust line height */
+    }
+
+    .social-links {
+        justify-content: center; /* Center social links */
+        gap: 10px; /* Reduce gap */
+    }
+
+    .project-description {
+        padding: 15px; /* Reduce padding */
+        font-size: 14px; /* Adjust font size */
+        line-height: 1.5; /* Adjust line height */
+    }
+
+    .project-title {
+        font-size: 20px; /* Reduce font size */
+    }
+
+    .key-features {
+        padding-left: 15px; /* Reduce left padding */
+    }
+
+    .key-features li {
+        font-size: 14px; /* Adjust font size */
+    }
+}
+@media (max-width: 480px) {
+    .about-wrapper {
+        margin-top: 23%;
+        padding: 15px; /* Further reduce padding */
+        gap: 10px; /* Narrow gap */
+    }
+
+    .profile-card {
+        padding: 10px; /* Reduce padding for very small screens */
+        gap: 10px; /* Reduce gap between image and details */
+    }
+
+    .profile-pic {
+        width: 100px; /* Smaller profile picture */
+        height: 100px;
+    }
+
+    .profile-name {
+        font-size: 18px; /* Adjust font size */
+    }
+
+    .contact-details {
+        font-size: 12px; /* Smaller font for contact details */
+        overflow: hidden;
+    }
+    .contact-detailsph {
+        font-size: 12px; /* Smaller font for contact details */
+        overflow: hidden;
+    }
+
+    .social-links {
+        gap: 8px; /* Smaller gap for icons */
+    }
+
+    .project-description {
+        padding: 10px; /* Adjust padding */
+        font-size: 12px; /* Smaller text */
+    }
+
+    .project-title {
+        font-size: 18px; /* Adjust font size */
+    }
+
+    .key-features {
+        padding-left: 10px; /* Reduce padding */
+    }
+
+    .key-features li {
+        font-size: 12px; /* Smaller font size for list items */
+    }
+    @keyframes typingName {
+        from {
+            width: 0;
+        }
+        to {
+            width: 84%;
+        }
+    }
+
+    @keyframes typingDetails {
+        from {
+            width: 0;
+        }
+        to {
+            width: 44%;
+        }
+       
+        }
+        @keyframes typingDetailsph {
+            from {
+                width: 0;
+            }
+            to {
+                width: 28%;
+            }
+         }
+}
+
+@media (max-width: 400px) {
+    .about-wrapper {
+        margin-top: 23%;
+        padding: 15px; /* Further reduce padding */
+        gap: 10px; /* Narrow gap */
+    }
+
+    .profile-card {
+        padding: 10px; /* Reduce padding for very small screens */
+        gap: 10px; /* Reduce gap between image and details */
+    }
+
+    .profile-pic {
+        width: 100px; /* Smaller profile picture */
+        height: 100px;
+    }
+
+    .profile-name {
+        font-size: 18px; /* Adjust font size */
+    }
+
+    .contact-details {
+        font-size: 12px; /* Smaller font for contact details */
+        overflow: hidden;
+    }
+    .contact-detailsph {
+        font-size: 12px; /* Smaller font for contact details */
+        overflow: hidden;
+    }
+
+    .social-links {
+        gap: 8px; /* Smaller gap for icons */
+    }
+
+    .project-description {
+        padding: 10px; /* Adjust padding */
+        font-size: 12px; /* Smaller text */
+    }
+
+    .project-title {
+        font-size: 18px; /* Adjust font size */
+    }
+
+    .key-features {
+        padding-left: 10px; /* Reduce padding */
+    }
+
+    .key-features li {
+        font-size: 12px; /* Smaller font size for list items */
+    }
+    @keyframes typingName {
+        from {
+            width: 0;
+        }
+        to {
+            width: 100%;
+        }
+    }
+
+    @keyframes typingDetails {
+        from {
+            width: 0;
+        }
+        to {
+            width: 49%;
+        }
+       
+        }
+        @keyframes typingDetailsph {
+            from {
+                width: 0;
+            }
+            to {
+                width: 34%;
+            }
+         }
+}
+    </style>
+
+    <div class="about-wrapper">
+        <!-- Profile Section -->
+        <div class="profile-card">
+            <img src="https://i.imgur.com/AQCtk97.jpeg" alt="Venkateswara Rao Bhimasingi" class="profile-pic">
+            <div>
+                <div class="profile-name">VENKATESWARA RAO BHIMASINGI</div>
+                <div class="contact-detailsph">
+                    Phone: 9491019773<br>
+                </div>
+                <div class="contact-details">
+                    Email: <a href="mailto:srinu19773@gmail.com">srinu19773@gmail.com</a>
+                </div>
+                <div class="social-links">
+                    <a href="https://github.com/Venkateswararaobhimasingi" class="social-icon" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/venkateswara-rao-bhimasingi-376981287" class="social-icon" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="project-description">
+            <div class="project-title">About HealHaven</div>
+            <p>
+                HealHaven is an innovative platform designed to bridge the gap between education and healthcare. Our mission is to ensure students receive timely health support while creating a nurturing environment for learning and well-being.
+            </p>
+            <div class="key-features">
+                <strong>Key Features:</strong>
+                <ul>
+                    <li>Communication interface for reporting health issues directly to department doctors.</li>
+                    <li>Automatic escalation to department teachers if no response is received within 5 minutes.</li>
+                    <li>Dedicated profile pages for students and teachers.</li>
+                    <li>Health chatbot offering quick assistance and guidance.</li>
+                    <li>Login and registration features for secure access.</li>
+                    <li>Blog platform for sharing posts and messages.</li>
+                    
+                    <li>Search functionality: Doctors/teachers can search student profiles, while students can search blog posts.</li>
+                    <li>Built with Django, HealHaven combines the power of technology and simplicity to deliver an impactful healthcare solution for educational institutions.</li>
+                </ul>
+            </div>
+            <p>
+                HealHaven is not just a platform, it’s a vision to make healthcare accessible, efficient, and integrated into educational institutions.
+            </p>
+        </div>
+    </div>
+
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}

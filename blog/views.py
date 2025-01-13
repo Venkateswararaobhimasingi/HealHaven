@@ -38,6 +38,8 @@ def home(request):
     if request.method == 'POST':
         name = request.POST['name']
     return render(request, 'blog/home.html')
+def about(request):
+    return render(request, 'blog/about.html')
     
 def msg(request):
     current_user = request.user 
