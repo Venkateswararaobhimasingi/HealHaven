@@ -436,6 +436,8 @@ def update_student_profile_view(request):
         'simg': student_profile.image if student_profile.image else 'https://i.imgur.com/7suwDp5.jpeg',
     }
     return render(request, 'blog/update_student_profile.html', context)
+
+
 @login_required
 def update_teacher_profile_view(request):
     teacher_profile = request.user.teacher_profile
@@ -453,30 +455,32 @@ def update_teacher_profile_view(request):
             user.save()
 
             image_file = request.FILES.get('image')
+
             if image_file:
                 try:
                     imgur_url = upload_to_imgur(image_file)
-                    teacher_profile.image = imgur_url  # Update image if a new one is uploaded
+                    teacher_profile.image = imgur_url  # Update the image if a new one is uploaded
                 except Exception as e:
                     messages.error(request, f"Error uploading image: {str(e)}")
                     return redirect('update_teacher_profile')
+            else:
+                # Keep the existing image if no new one is uploaded
+                profile_form.instance.image = teacher_profile.image  
 
-            # **Retain old image if no new image is uploaded**
-            if not image_file:
-                profile_form.instance.image = teacher_profile.image  # Keep the existing image
-            
             profile_form.save()  # Save the profile with the correct image
 
             messages.success(request, 'Your profile has been updated successfully!')
             return redirect('teacher_profile')
 
+    # Ensure an image is always displayed in the template
+    profile_image_url = teacher_profile.image if teacher_profile.image else 'https://i.imgur.com/7suwDp5.jpeg'
+
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
-        'simg': teacher_profile.image if teacher_profile.image else 'https://i.imgur.com/7suwDp5.jpeg',
+        'simg': profile_image_url,
     }
     return render(request, 'blog/update_teacher_profile.html', context)
-
 
 
 @login_required
