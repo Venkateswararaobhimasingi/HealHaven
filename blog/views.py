@@ -416,12 +416,17 @@ def update_student_profile_view(request):
                 try:
                     # Upload the image to Imgur
                     imgur_url = upload_to_imgur(image_file)
-                    student_profile.image = imgur_url  # Set the image URL
+                    student_profile.image = imgur_url  # Set the new image URL
                 except Exception as e:
                     messages.error(request, f"Error uploading image: {str(e)}")
                     return redirect('update_student_profile')
 
-            profile_form.save()
+            # Ensure the existing image is not erased if no new image is uploaded
+            profile_form.save(commit=False)
+            if not image_file and not student_profile.image:
+                student_profile.image = 'https://i.imgur.com/7suwDp5.jpeg'  # Default profile image
+            student_profile.save()
+
             messages.success(request, 'Your profile has been updated successfully!')
             return redirect('student_profile')
 
@@ -452,12 +457,17 @@ def update_teacher_profile_view(request):
             if image_file:
                 try:
                     imgur_url = upload_to_imgur(image_file)
-                    teacher_profile.image = imgur_url
+                    teacher_profile.image = imgur_url  # Update image if a new one is uploaded
                 except Exception as e:
                     messages.error(request, f"Error uploading image: {str(e)}")
                     return redirect('update_teacher_profile')
 
-            profile_form.save()
+            # Ensure existing image is retained if no new image is uploaded
+            profile_form.save(commit=False)
+            if not image_file and not teacher_profile.image:
+                teacher_profile.image = 'https://i.imgur.com/7suwDp5.jpeg'  # Default image
+            teacher_profile.save()
+
             messages.success(request, 'Your profile has been updated successfully!')
             return redirect('teacher_profile')
 
