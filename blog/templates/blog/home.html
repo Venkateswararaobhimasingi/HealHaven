@@ -469,6 +469,29 @@
     
         // Call the function every 1 minute (60,000 ms)
         setInterval(callMsgCalled, 120000);
+        function aicallMsgCalled() {
+            const url = "{% url 'ai_create_post' %}"; // Django URL tag to call 'ai_create_post' view
+      
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+              if (xhr.readyState === 4) { // When the request is complete
+                if (xhr.status === 200) {
+                  const response = JSON.parse(xhr.responseText); // Parse JSON response
+                  console.log("Response from server:", response);
+      
+                  // Update content dynamically without reloading
+                  document.getElementById("response").innerText = `Message: ${response.message}`;
+                } else {
+                  console.error("Error calling the Django view:", xhr.status);
+                }
+              }
+            };
+            xhr.send();
+          }
+      
+          // Call the function every 1 minute (60,000 ms)
+          setInterval(aicallMsgCalled, 43200000);
       </script>
 </body>
 </html>

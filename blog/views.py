@@ -1198,3 +1198,72 @@ def get_notification_count(request):
     total_unread_count = unread_direct_messages + unread_emergency_messages
 
     return JsonResponse({"total_count": total_unread_count})
+
+
+import google.generativeai as genai
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+from django.http import JsonResponse
+from .models import Post
+import random
+
+# Configure Gemini API
+
+
+def generate_health_post():
+    genai.configure(api_key="AIzaSyC5GHHDoBNE7oaSFGD7WXkE5RBkNHG7AXQ")
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    """
+    Generates a unique and informative health-related blog post.
+    - Title should be catchy and engaging without a date.
+    - Content should be a single 4-line paragraph with useful health tips, facts, or awareness.
+    """
+
+    prompt = """
+    Create a compelling health-related blog post.
+    - Generate an eye-catching title that does not contain the date.
+    - Write an engaging 4-line paragraph with health facts, awareness, or useful tips.
+    - Ensure it is informative, positive, and practical for readers.
+    - Avoid duplicate content and keep it unique.
+    
+    Format:
+    Title: [Catchy Title]
+    Content: [4-line paragraph]
+    """
+
+    response = model.generate_content(prompt)
+    
+    if response and response.text:
+        return response.text.strip()
+    else:
+        return None
+
+
+# Django view function for AI post creation
+def ai_create_post(request):
+    try:
+        # Retrieve AI bot user
+        ai_bot_user = User.objects.get(username="healthbot")
+    except User.DoesNotExist:
+        return JsonResponse({"error": "AI Bot user does not exist."}, status=400)
+
+    # Generate a new post
+    content = generate_health_post()
+    
+    if not content:
+        return JsonResponse({"error": "AI-generated content is empty."}, status=400)
+
+    # Extract the first line as title and the rest as content
+    lines = content.split("\n")
+    title = lines[0].replace("Title: ", "").strip() if lines else "Health Awareness Insights"
+    body_content = "\n".join(lines[1:]).replace("Content: ", "").strip()
+
+    # Ensure the post is unique
+    if Post.objects.filter(title=title).exists() or Post.objects.filter(content=body_content).exists():
+        return JsonResponse({"warning": "A similar post already exists. Generating a new one..."}, status=200)
+
+    # Save post
+    post = Post(title=title, content=body_content, author=ai_bot_user, date_posted=now(), role='student')
+    post.save()
+
+    return JsonResponse({"message": f"AI-generated post '{title}' saved successfully!"}, status=201)

@@ -1,14 +1,22 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import StudentProfileDetails,TeacherProfileDetails,Post
+from django.core.validators import RegexValidator
 
+phone_validator = RegexValidator(
+    regex=r'^\d{10}$',
+    message="Phone number must be exactly 10 digits."
+)
 class StudentProfileUpdateForm(forms.ModelForm):
+    phone_number = forms.CharField(validators=[phone_validator])
+    parents_number = forms.CharField(validators=[phone_validator])
     class Meta:
         model = StudentProfileDetails
         fields = ['image', 'studying_year', 'department', 'phone_number', 'parents_number']
 
 
 class TeacherProfileUpdateForm(forms.ModelForm):
+    phone_number = forms.CharField(validators=[phone_validator])
     class Meta:
         model = TeacherProfileDetails
         fields = ['roll_number', 'department', 'phone_number', 'role', 'image']

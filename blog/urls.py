@@ -52,5 +52,6 @@ urlpatterns = [
 
     path('search/', views.search, name='search'),
     path('notification-count/', views.get_notification_count, name='notification_count'),
+    path('ai_create_post/',views.ai_create_post,name='ai_create_post'),
 
 ]
