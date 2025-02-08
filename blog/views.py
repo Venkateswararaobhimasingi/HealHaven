@@ -398,7 +398,7 @@ def upload_to_imgur(image_file):
 @login_required
 def update_student_profile_view(request):
     student_profile = request.user.student_profile
-
+    temp=student_profile.image
     user_form = UserUpdateForm(instance=request.user)
     profile_form = StudentProfileUpdateForm(instance=student_profile)
 
@@ -416,17 +416,15 @@ def update_student_profile_view(request):
                 try:
                     # Upload the image to Imgur
                     imgur_url = upload_to_imgur(image_file)
-                    student_profile.image = imgur_url  # Set the new image URL
+                    student_profile.image = imgur_url  # Set the image URL
                 except Exception as e:
                     messages.error(request, f"Error uploading image: {str(e)}")
                     return redirect('update_student_profile')
 
-            # Ensure the existing image is not erased if no new image is uploaded
-            profile_form.save(commit=False)
-            if not image_file and not student_profile.image:
-                student_profile.image = 'https://i.imgur.com/7suwDp5.jpeg'  # Default profile image
-            student_profile.save()
-
+            profile_form.save()
+            if image_file==None:
+                student_profile.image = temp
+                student_profile.save()
             messages.success(request, 'Your profile has been updated successfully!')
             return redirect('student_profile')
 
@@ -437,11 +435,11 @@ def update_student_profile_view(request):
     }
     return render(request, 'blog/update_student_profile.html', context)
 
-
 @login_required
 def update_teacher_profile_view(request):
     teacher_profile = request.user.teacher_profile
-
+    temp=teacher_profile.image
+    
     user_form = UserUpdateForm(instance=request.user)
     profile_form = TeacherProfileUpdateForm(instance=teacher_profile)
 
@@ -459,28 +457,27 @@ def update_teacher_profile_view(request):
             if image_file:
                 try:
                     imgur_url = upload_to_imgur(image_file)
-                    teacher_profile.image = imgur_url  # Update the image if a new one is uploaded
+                    teacher_profile.image = imgur_url  # Update with new image if uploaded
                 except Exception as e:
                     messages.error(request, f"Error uploading image: {str(e)}")
                     return redirect('update_teacher_profile')
-            else:
-                # Keep the existing image if no new one is uploaded
-                profile_form.instance.image = teacher_profile.image  
-
-            profile_form.save()  # Save the profile with the correct image
-
+           
+                
+           
+            profile_form.save()  # Save with either a new or existing image
+            if image_file==None:
+                teacher_profile.image = temp
+                teacher_profile.save()
             messages.success(request, 'Your profile has been updated successfully!')
             return redirect('teacher_profile')
-
-    # Ensure an image is always displayed in the template
-    profile_image_url = teacher_profile.image if teacher_profile.image else 'https://i.imgur.com/7suwDp5.jpeg'
 
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
-        'simg': profile_image_url,
+        'simg': teacher_profile.image if teacher_profile.image!=None else 'https://i.imgur.com/7suwDp5.jpeg',
     }
     return render(request, 'blog/update_teacher_profile.html', context)
+
 
 
 @login_required
@@ -536,7 +533,7 @@ def create_post(request):
                 try:
                     # Try to get student profile by matching email
                     student_profile = StudentProfileDetails.objects.get(user__email=request.user.email)
-                    post.role = 'student'  # Assign role 'student' if profile is found
+                    post.role = student_profile.role  # Assign role 'student' if profile is found
                     print(f"User {request.user.email} is a student.")  # Print the role
                 except StudentProfileDetails.DoesNotExist:
                     # If no profile is found, default to 'student'
@@ -1275,7 +1272,7 @@ def ai_create_post(request):
         return JsonResponse({"warning": "A similar post already exists. Generating a new one..."}, status=200)
 
     # Save post
-    post = Post(title=title, content=body_content, author=ai_bot_user, date_posted=now(), role='student')
+    post = Post(title=title, content=body_content, author=ai_bot_user, date_posted=now(), role='bot')
     post.save()
 
     return JsonResponse({"message": f"AI-generated post '{title}' saved successfully!"}, status=201)

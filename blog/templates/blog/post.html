@@ -332,7 +332,7 @@
         {% for post in posts %}
         <div class="post-card">
             <div class="post-header">
-                {% if post.role == 'student' %}
+                {% if post.role == 'student' or post.role == 'bot' %}
                     <img src="{{ post.author.student_profile.image }}" alt="Profile Picture" class="post-profile-pic">
                 {% elif post.role == 'teacher' or post.role == 'doctor' %}
                     <img src="{{ post.author.teacher_profile.image }}" alt="Profile Picture" class="post-profile-pic">
