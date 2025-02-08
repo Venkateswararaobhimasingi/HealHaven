@@ -196,7 +196,7 @@
 <script>
     const imageInput = document.getElementById('imageInput');
     const profileImage = document.getElementById('profileImage');
-
+    
     imageInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {
@@ -205,6 +205,14 @@
                 profileImage.src = e.target.result;
             };
             reader.readAsDataURL(file);
+        }
+    });
+
+    // Ensure existing image remains if no new file is selected
+    document.querySelector("form").addEventListener("submit", function(event) {
+        if (!imageInput.files.length) {
+            // If no new file is selected, keep the existing image
+            imageInput.removeAttribute("name");  
         }
     });
 </script>
