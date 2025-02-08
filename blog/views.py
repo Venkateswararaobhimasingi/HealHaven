@@ -436,7 +436,6 @@ def update_student_profile_view(request):
         'simg': student_profile.image if student_profile.image else 'https://i.imgur.com/7suwDp5.jpeg',
     }
     return render(request, 'blog/update_student_profile.html', context)
-
 @login_required
 def update_teacher_profile_view(request):
     teacher_profile = request.user.teacher_profile
@@ -462,11 +461,11 @@ def update_teacher_profile_view(request):
                     messages.error(request, f"Error uploading image: {str(e)}")
                     return redirect('update_teacher_profile')
 
-            # Ensure existing image is retained if no new image is uploaded
-            profile_form.save(commit=False)
-            if not image_file and not teacher_profile.image:
-                teacher_profile.image = 'https://i.imgur.com/7suwDp5.jpeg'  # Default image
-            teacher_profile.save()
+            # **Retain old image if no new image is uploaded**
+            if not image_file:
+                profile_form.instance.image = teacher_profile.image  # Keep the existing image
+            
+            profile_form.save()  # Save the profile with the correct image
 
             messages.success(request, 'Your profile has been updated successfully!')
             return redirect('teacher_profile')
@@ -477,7 +476,6 @@ def update_teacher_profile_view(request):
         'simg': teacher_profile.image if teacher_profile.image else 'https://i.imgur.com/7suwDp5.jpeg',
     }
     return render(request, 'blog/update_teacher_profile.html', context)
-
 
 
 
