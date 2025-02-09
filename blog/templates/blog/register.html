@@ -171,8 +171,8 @@
             <div class="flip-card-register__front">
                 <form action="{% url 'register_student' %}" method="POST">
                     {% csrf_token %}
-                    <label class="flip-card-register__label" for="student-name">Name</label>
-                    <input id="student-name" class="flip-card-register__input" name="name" placeholder="Enter Your Name" type="text" required>
+                    <label class="flip-card-register__label" for="student-name">Username</label>
+                    <input id="student-name" class="flip-card-register__input" name="name" placeholder="Enter Your Username" type="text" required>
 
                     <label class="flip-card-register__label" for="student-email">Email</label>
                     <input id="student-email" class="flip-card-register__input" name="email" placeholder="Enter Your Email" type="email" required>
@@ -191,8 +191,8 @@
             <div class="flip-card-register__back">
                 <form action="{% url 'register_teacher' %}" method="POST">
                     {% csrf_token %}
-                    <label class="flip-card-register__label" for="teacher-name">Name</label>
-                    <input id="teacher-name" class="flip-card-register__input" name="name" placeholder="Enter Your Name" type="text" required>
+                    <label class="flip-card-register__label" for="teacher-name">Username</label>
+                    <input id="teacher-name" class="flip-card-register__input" name="name" placeholder="Enter Your Username" type="text" required>
 
                     <label class="flip-card-register__label" for="teacher-email">Email</label>
                     <input id="teacher-email" class="flip-card-register__input" name="email" placeholder="Enter Your Email" type="email" required>
