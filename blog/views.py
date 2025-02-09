@@ -960,7 +960,7 @@ def send_emergency_message(request):
 
     return render(request, "blog/send_emergency_message.html")
 
-@login_required
+
 def msg_called(request):
     now_time = now()
     five_minutes_ago = now_time - timedelta(minutes=5)
