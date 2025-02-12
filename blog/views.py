@@ -1235,9 +1235,9 @@ def generate_health_post():
     - Ensure it is informative, positive, and practical for readers.
     - Avoid duplicate content and keep it unique.
     -based on day to today activites and changes and updatation or scam and imporvenments or celebration on health info.
-    -if sometime currnt day is anything spectal can give on that info .which good and helpful people according health
     
     Format:
+    
     Title: [Catchy Title]
     Content: [4-line paragraph]
     """
@@ -1271,7 +1271,7 @@ def ai_create_post(request):
 
     # Ensure the post is unique
     if Post.objects.filter(title=title).exists() or Post.objects.filter(content=body_content).exists():
-        return return ai_create_post(request)
+        return ai_create_post(request)
 
     # Save post
     post = Post(title=title, content=body_content, author=ai_bot_user, date_posted=now(), role='bot')
