@@ -1218,8 +1218,13 @@ import random
 
 # Configure Gemini API
 
+import time
+
+# Get today's date in YYYY-MM-DD format
+
 
 def generate_health_post():
+    today_date = time.strftime("%Y-%m-%d")
     genai.configure(api_key="AIzaSyC5GHHDoBNE7oaSFGD7WXkE5RBkNHG7AXQ")
     model = genai.GenerativeModel("gemini-1.5-flash")
     """
@@ -1234,11 +1239,13 @@ def generate_health_post():
     - Write an engaging 4-line paragraph with health facts, awareness, or useful tips.
     - Ensure it is informative, positive, and practical for readers.
     - Avoid duplicate content and keep it unique.
+    -based on day to today activites and changes and updatation or scam and imporvenments or celebration on health info.
+    -if sometime currnt day is anything spectal can give on that info .which good and helpful people accordin give .
     
     Format:
     Title: [Catchy Title]
     Content: [4-line paragraph]
-    """
+    """+str(today_date)
 
     response = model.generate_content(prompt)
     
