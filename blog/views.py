@@ -1269,7 +1269,7 @@ def ai_create_post(request):
 
     # Ensure the post is unique
     if Post.objects.filter(title=title).exists() or Post.objects.filter(content=body_content).exists():
-        return JsonResponse({"warning": "A similar post already exists. Generating a new one..."}, status=200)
+        return return ai_create_post(request)
 
     # Save post
     post = Post(title=title, content=body_content, author=ai_bot_user, date_posted=now(), role='bot')
