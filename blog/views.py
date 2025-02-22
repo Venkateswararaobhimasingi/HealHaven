@@ -349,7 +349,7 @@ def reset_password(request):
 
 
 
-
+@login_required
 def student_profile_view(request):
     student_profile = get_object_or_404(StudentProfileDetails, user=request.user)
     print(student_profile.email)
@@ -549,7 +549,7 @@ def create_post(request):
 
 
 
-
+@login_required
 def post_update(request):
 
     if request.method == 'POST':
@@ -603,7 +603,7 @@ def post_delete(request ):
         return redirect('post')
     return render(request, 'blog/post_delete.html', {'post': post})
 
-
+@login_required
 def chat(request):
     return render(request, 'blog/chat.html')
 
@@ -621,7 +621,7 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 # Set up logging for debugging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+@login_required
 def chatbot_response(request):
     if request.method == "POST":
         
@@ -693,6 +693,7 @@ from .models import TeacherProfileDetails, StudentProfileDetails  # Import profi
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+@login_required
 @csrf_exempt
 def add_reply(request):
     if request.method == 'POST':
