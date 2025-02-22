@@ -62,11 +62,38 @@
         transform: scale(1.05);
         box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
     }
+    .message-box {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 16px;
+        text-align: center;
+    }
+    
+    .error {
+        background: rgba(255, 0, 0, 0.2);
+        border: 1px solid red;
+        color: red;
+    }
+    
+    .success {
+        background: rgba(0, 255, 0, 0.2);
+        border: 1px solid #00ff00;
+        color: #00ff00;
+    }
 </style>
 
 <div class="wrapper-ln">
     <div class="otp-card-ln">
         <h2>Verify OTP</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-box {% if message.tags == 'success' %}success{% else %}error{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <form method="POST" action="{% url 'verify_otp' %}">
             {% csrf_token %}
             <input type="email" name="email" placeholder="Enter your email" required>

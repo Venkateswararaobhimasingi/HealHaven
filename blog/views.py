@@ -250,7 +250,9 @@ def langu(request):
 def send_otp(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-
+        if not User.objects.filter(email=email).exists():
+            messages.error(request, "This email is not registered in our system.")
+            return redirect('send_otp')
         # Generate a random 6-digit OTP
         otp_code = f"{random.randint(100000, 999999)}"
 
@@ -1245,7 +1247,7 @@ def generate_health_post():
     - Ensure it is informative, positive, and practical for readers.
     - Avoid duplicate content and keep it unique.
     -based on day to today activites and changes and updatation or scam and imporvenments or celebration on health info.
-    
+    -every title whole may change as attractive and u always as walk or any one particular thing i don't want give new health facts content
     Format:
     
     Title: [Catchy Title]
