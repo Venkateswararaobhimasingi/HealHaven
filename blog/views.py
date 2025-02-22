@@ -52,7 +52,8 @@ def base(request):
     return render(request, 'blog/base.html')
 
 def login(request):
-    
+    if request.user.is_authenticated:
+        return redirect('home')
     return render(request, 'blog/login.html')
 def register(request):
     
@@ -67,6 +68,8 @@ def forgotpassword(request):
 
 # Student Registration
 def register_student(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == 'POST':
         name = request.POST['name']
         email = request.POST['email']
@@ -99,6 +102,8 @@ def register_student(request):
 
 
 def register_teacher(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == 'POST':
         name = request.POST['name']
         email = request.POST['email']
@@ -135,6 +140,8 @@ def register_teacher(request):
 # Student Login View
 
 def student_login(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == 'POST':  # Only process POST requests
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -170,6 +177,8 @@ def student_login(request):
 
 
 def teacher_login(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == 'POST':  # Only process POST requests
         email = request.POST.get('email')
         password = request.POST.get('password')
