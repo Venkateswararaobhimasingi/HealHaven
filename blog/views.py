@@ -924,27 +924,38 @@ def message_detail(request):
 
 
 
+import datetime
+import random
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.utils.timezone import now, timedelta
 from django.http import JsonResponse
-from .models import EmergencyMessage, StudentProfileDetails, TeacherProfileDetails
+from django.core.mail import send_mail
+from django.contrib import messages
+from .models import EmergencyMessage, StudentProfileDetails, TeacherProfileDetails, OTP
 from .forms import EmergencyMessageForm
 
 @login_required
 def send_emergency_message(request):
     user = request.user
-
+    
     # Fetch user's profile
     try:
         profile = StudentProfileDetails.objects.get(email=user.email)
     except StudentProfileDetails.DoesNotExist:
         try:
             profile = TeacherProfileDetails.objects.get(email=user.email)
+            if not all([profile.role, profile.department, profile.phone_number, profile.roll_number]):
+                return redirect("update_teacher_profile")
+            
         except TeacherProfileDetails.DoesNotExist:
-            return render(request, "blog/msg.html", {"message": "Please update your profile before sending an emergency message."})
-
+            return redirect("update_teacher_profile")
+    
+    # Check if any required field is empty
+    if not all([profile.role, profile.department, profile.phone_number, profile.roll_number]):
+        return redirect("update_student_profile")
+    
     if request.method == "POST":
         problem = request.POST.get('problem')
         sender_role = profile.role
@@ -968,10 +979,20 @@ def send_emergency_message(request):
         emergency_message.sent_to_user.add(*doctors)
         emergency_message.save()
 
+        # Send email to doctors
+        doctor_emails = [doctor.email for doctor in doctors if doctor.email]
+        if doctor_emails:
+            send_mail(
+                "HealHaven Emergency Alert",
+                f"Dear Doctor,\n\nThere are {EmergencyMessage.objects.filter(status='pending', sent_to_role='doctor').count()} unresolved emergency messages in your department. Please check the system and respond promptly.\n\nBest,\nHealHaven Team",
+                "srinu19773@gmail.com",
+                doctor_emails,
+                fail_silently=False,
+            )
+
         return redirect("emergency_list")
-
+    
     return render(request, "blog/send_emergency_message.html")
-
 
 def msg_called(request):
     now_time = now()
@@ -981,7 +1002,6 @@ def msg_called(request):
     unresolved_messages = EmergencyMessage.objects.filter(
         sent_time__lte=now_time, status="pending"
     )
-
     escalated_count = 0
 
     for message in unresolved_messages:
@@ -993,6 +1013,17 @@ def msg_called(request):
             message.save()
             escalated_count += 1
 
+            # Send email to teachers
+            teacher_emails = [teacher.email for teacher in teachers if teacher.email]
+            if teacher_emails:
+                send_mail(
+                    "HealHaven Emergency Escalation",
+                    f"Dear Teacher,\n\nThere are {EmergencyMessage.objects.filter(status='pending', sent_to_role='teacher').count()} unresolved emergency messages in your department that require immediate attention.\n\nBest,\nHealHaven Team",
+                    "srinu19773@gmail.com",
+                    teacher_emails,
+                    fail_silently=False,
+                )
+    
     return JsonResponse({"message": f"{escalated_count} messages escalated to teachers."})
 
 
