@@ -1221,39 +1221,32 @@ def get_notification_count(request):
     return JsonResponse({"total_count": total_unread_count})
 
 
-import google.generativeai as genai
-from django.contrib.auth.models import User
+import datetime
 from django.utils.timezone import now
 from django.http import JsonResponse
-from .models import Post
-import random
-
-# Configure Gemini API
-
+from django.contrib.auth.models import User
+from blog.models import Post
+import google.generativeai as genai
 
 def generate_health_post():
+    today_date = datetime.datetime.now().strftime("%B %d, %Y")
     genai.configure(api_key="AIzaSyC5GHHDoBNE7oaSFGD7WXkE5RBkNHG7AXQ")
     model = genai.GenerativeModel("gemini-1.5-flash")
-    """
-    Generates a unique and informative health-related blog post.
-    - Title should be catchy and engaging without a date.
-    - Content should be a single 4-line paragraph with useful health tips, facts, or awareness.
-    """
-
-    prompt = """
-    Create a compelling health-related blog post.
-    - Generate an eye-catching title that does not contain the date.
-    - Write an engaging 4-line paragraph with health facts, awareness, or useful tips.
-    - Ensure it is informative, positive, and practical for readers.
-    - Avoid duplicate content and keep it unique.
-    -based on day to today activites and changes and updatation or scam and imporvenments or celebration on health info.
-    -every title whole may change as attractive and u always as walk or any one particular thing i don't want give new health facts content
-    Format:
     
+    prompt = f"""
+    Generate a unique health-related blog post for {today_date}.
+    - Start with an eye-catching title (without the date in the title).
+    - Write a short, engaging paragraph (4-5 lines) on health tips, awareness, or recent discoveries.
+    - If today is a special health day (e.g., World Health Day), mention it.
+    - If there are any new disease outbreaks, medical advancements, or scams related to health, include a brief awareness note.
+    - Ensure each post is different from previous ones (e.g., if one is about a health day, the next should be about new research, fitness tips, or scam alerts).
+    - The content should be informative, positive, and practical.
+    
+    Format:
     Title: [Catchy Title]
-    Content: [4-line paragraph]
+    Content: [Engaging 4-5 line paragraph]
     """
-
+    
     response = model.generate_content(prompt)
     
     if response and response.text:
@@ -1261,32 +1254,33 @@ def generate_health_post():
     else:
         return None
 
-
-# Django view function for AI post creation
 def ai_create_post(request):
     try:
-        # Retrieve AI bot user
         ai_bot_user = User.objects.get(username="healthbot")
     except User.DoesNotExist:
         return JsonResponse({"error": "AI Bot user does not exist."}, status=400)
-
+    
+    # Check if two posts already exist for today
+    today_posts = Post.objects.filter(author=ai_bot_user, date_posted__date=now().date())
+    if today_posts.count() >= 2:
+        return JsonResponse({"error": "AI-generated post limit reached for today."}, status=400)
+    
     # Generate a new post
     content = generate_health_post()
-    
     if not content:
         return JsonResponse({"error": "AI-generated content is empty."}, status=400)
-
+    
     # Extract the first line as title and the rest as content
     lines = content.split("\n")
     title = lines[0].replace("Title: ", "").strip() if lines else "Health Awareness Insights"
     body_content = "\n".join(lines[1:]).replace("Content: ", "").strip()
-
+    
     # Ensure the post is unique
     if Post.objects.filter(title=title).exists() or Post.objects.filter(content=body_content).exists():
-        return ai_create_post(request)
-
-    # Save post
+        return ai_create_post(request)  # Retry with a new post
+    
+    # Save the post
     post = Post(title=title, content=body_content, author=ai_bot_user, date_posted=now(), role='bot')
     post.save()
-
+    
     return JsonResponse({"message": f"AI-generated post '{title}' saved successfully!"}, status=201)
