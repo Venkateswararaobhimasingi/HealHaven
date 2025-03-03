@@ -984,7 +984,7 @@ def send_emergency_message(request):
         if doctor_emails:
             send_mail(
                 "HealHaven Emergency Alert",
-                f"Dear Doctor,\n\nThere are {EmergencyMessage.objects.filter(status='pending', sent_to_role='doctor').count()} unresolved emergency messages in your department. Please check the system and respond promptly.\n\nBest,\nHealHaven Team",
+                f"Dear Doctor,\n\nThere are {EmergencyMessage.objects.filter(status='pending', sent_to_role='doctor').count()} unresolved emergency messages in your department. Please check and respond as soon as possible.\n\nBest,\nHealHaven Team",
                 "srinu19773@gmail.com",
                 doctor_emails,
                 fail_silently=False,
