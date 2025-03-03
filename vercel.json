@@ -1,15 +1,13 @@
 {
-    "functions": {
-        "api/HealHaven/wsgi.py": {
-            "runtime": "python3.11",
-            "maxDuration": 30,
-            "memory": 512
-        }
-    },
+    "builds": [{
+        "src": "HealHaven/wsgi.py",
+        "use": "@vercel/python",
+        "config": { "maxLambdaSize": "30mb", "runtime": "python3.11" }
+    }],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "api/HealHaven/wsgi.py"
+            "dest": "HealHaven/wsgi.py"
         }
     ]
 }
