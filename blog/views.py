@@ -1045,6 +1045,9 @@ from .models import EmergencyMessage, StudentProfileDetails, TeacherProfileDetai
 @login_required
 def emergency_list(request):
     user = request.user
+    now_time = now()
+    five_minutes_ago = now_time - timedelta(minutes=5)
+
     # Fetch user's profile
     try:
         profile = StudentProfileDetails.objects.get(email=user.email)
@@ -1054,46 +1057,25 @@ def emergency_list(request):
         except TeacherProfileDetails.DoesNotExist:
             return render(request, "blog/msg.html", {"message": "Profile not found."})
 
-    role = profile.role
-    print(role)
+    role = profile.role  # Get user role
 
-    if role=="doctor" or role == "teacher":
-        # Doctors and teachers see actionable messages in their department
-        # Include messages from students and other teachers (exclude their own messages)
+    if role in ["doctor", "teacher"]:
+        # Doctors & Teachers see messages only if they are assigned in `sent_to_user`
         messages = EmergencyMessage.objects.filter(
-            sender_department=profile.department,
-            status="pending",
-        ).exclude(sender=user).select_related('sender')
-        '''messages = EmergencyMessage.objects.filter(
-            sender_department=profile.department,
-            status="pending",
-        ).exclude(sender=user).select_related('sender')'''
-        can_resolve = True  # Doctors and teachers can resolve
-        print("hello")
-        if messages.count() == 0:
-            messages = EmergencyMessage.objects.filter(sender=user).select_related('sender')
-        
+            sent_to_user=user,  # Only messages where they are explicitly assigned
+            status="pending"
+        ).select_related('sender')
+        can_resolve = True  # Doctors & Teachers can resolve
+
     else:
-        # Students see their own messages
+        # Students see only their own messages
         messages = EmergencyMessage.objects.filter(sender=user).select_related('sender')
         can_resolve = False  # Students cannot resolve
 
-    # Add sender details (e.g., role number)
-    for message in messages:
-        sender_profile = None
-        if message.sender_role == "student":
-            sender_profile = StudentProfileDetails.objects.filter(user=message.sender).first()
-        elif message.sender_role in ["teacher", "doctor"]:
-            sender_profile = TeacherProfileDetails.objects.filter(user=message.sender).first()
-
-        if sender_profile:
-            message.sender.roll_number = sender_profile.roll_number
-
     # Order messages by the most recent `sent_time`
     messages = messages.order_by('-sent_time')
-    
 
-    return render(request, "blog/emergency_list.html", {"messages": messages, "can_resolve": can_resolve,"userb":user.username})
+    return render(request, "blog/emergency_list.html", {"messages": messages, "can_resolve": can_resolve, "userb": user.username})
 
 
 
