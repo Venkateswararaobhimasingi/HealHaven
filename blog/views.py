@@ -1297,3 +1297,28 @@ def ai_create_post(request):
     post.save()
     
     return JsonResponse({"message": f"AI-generated post '{title}' saved successfully!"}, status=201)
+
+
+from django.core.mail import send_mass_mail
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+
+def notify_users_about_db_change(request):
+    User = get_user_model()
+    users = User.objects.all()
+    email_list = [user.email for user in users if user.email]
+
+    subject = 'Important: HealHaven Account Notice'
+    message = (
+        "Hello,\n\n"
+        "We’re upgrading the HealHaven database system. "
+        "Your login credentials may be lost due to this change. "
+        "If you face login issues, please re-register.\n\n"
+        "Thank you for using HealHaven!"
+    )
+
+    messages = [(subject, message, None, [email]) for email in email_list]
+
+    send_mass_mail(messages, fail_silently=False)
+
+    return HttpResponse("Emails sent successfully to all users.")

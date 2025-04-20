@@ -94,9 +94,16 @@ WSGI_APPLICATION = "HealHaven.wsgi.application"
 
 import dj_database_url
 
-DATABASES = {
+'''DATABASES = {
     "default": dj_database_url.parse(
         "postgresql://postgres:tHPohkjuAjiwGeaZVufjUwhrLUoVcDFH@junction.proxy.rlwy.net:39057/railway",
+        conn_max_age=600,
+        ssl_require=True
+    )
+}'''
+DATABASES = {
+    "default": dj_database_url.parse(
+        "postgresql://postgres:yFCEIOwmDdaoXKOuwDLtzRrzdWsbHZru@hopper.proxy.rlwy.net:29246/railway",
         conn_max_age=600,
         ssl_require=True
     )
@@ -167,8 +174,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'srinu19773@gmail.com'
-EMAIL_HOST_PASSWORD = 'pecz lpvm cmpw zdwc'
+EMAIL_HOST_USER = 'healhaven19773@gmail.com'
+EMAIL_HOST_PASSWORD = 'akzc pxta bexu jjgk'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
