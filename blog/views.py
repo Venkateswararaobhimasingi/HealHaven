@@ -1323,3 +1323,4 @@ def notify_users_about_db_change(request):
 
     return HttpResponse("Emails sent successfully to all users.")
     
+    
