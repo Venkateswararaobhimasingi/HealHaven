@@ -1322,3 +1322,4 @@ def notify_users_about_db_change(request):
     send_mass_mail(messages, fail_silently=False)
 
     return HttpResponse("Emails sent successfully to all users.")
+    
