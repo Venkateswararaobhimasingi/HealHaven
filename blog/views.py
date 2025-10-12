@@ -624,13 +624,14 @@ import requests
 import json
 import time
 import logging
+from decouple import config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # OpenRouter API key
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = config("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 
@@ -666,7 +667,7 @@ User message: {user_message}
             "Content-Type": "application/json",
         }
         payload = {
-            "model": "openai/gpt-4o-mini",  # or any free/other model
+            "model": "openai/gpt-oss-20b:free",  # or any free/other model
             "messages": [{"role": "user", "content": prompt}],
         }
 
@@ -1262,12 +1263,13 @@ def get_notification_count(request):
 import requests
 import json
 import datetime
+from decouple import config
 
 def generate_health_post():
     """
     Generates a health-related blog post using OpenRouter API (manual REST call).
     """
-    OPENROUTER_API_KEY = "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"
+    OPENROUTER_API_KEY = config("OPENROUTER_API_KEY")
     today_date = datetime.datetime.now().strftime("%B %d, %Y")
     
     # --- Keep the same prompt as before ---
@@ -1292,7 +1294,7 @@ def generate_health_post():
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "openai/gpt-4o-mini",  # can replace with any OpenRouter model
+        "model": "openai/gpt-oss-20b:free",  # can replace with any OpenRouter model
         "messages": [{"role": "user", "content": prompt}]
     }
 
