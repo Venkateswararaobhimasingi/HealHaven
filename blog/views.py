@@ -618,62 +618,88 @@ def post_delete(request ):
 def chat(request):
     return render(request, 'blog/chat.html')
 
-
 from django.http import JsonResponse
-import google.generativeai as genai
+from django.contrib.auth.decorators import login_required
+import requests
+import json
 import time
 import logging
-import json
 
-# Configure Generative AI API key
-genai.configure(api_key="AIzaSyDEV4I8_gmbwDN2eMfdHd_xBQaLzZ-oUoE")
-model = genai.GenerativeModel("gemini-1.5-flash")
-
-# Set up logging for debugging
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# OpenRouter API key
+OPENROUTER_API_KEY = "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"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+
+
 @login_required
 def chatbot_response(request):
     if request.method == "POST":
-        
         data = json.loads(request.body)
-        user_message = data.get("message")
+        user_message = data.get("message", "").strip()
 
         if not user_message:
             return JsonResponse({"response": "I didn't get that. Could you please rephrase?"})
 
-        # Add health-related context to the user message
-        health_prompt = (
-            "You are a helpful assistant specialized in health-related queries. "
-            "Please answer the following question or request with health-related advice or information only: "
-        )
-        full_prompt = health_prompt + user_message
+        # --- Improved health prompt ---
+        prompt = f"""
+You are an intelligent and caring health assistant chatbot.
+Your job is to help users only with health, wellness, fitness, nutrition, and medical awareness topics.
 
-        # Retry mechanism in case of temporary issues
+If the user's question is NOT related to health or medical information, reply strictly with:
+"Please ask only health-related questions so I can help you better."
+
+If the user's message is health-related, then:
+- Provide a clear, well-structured, and factual explanation.
+- Avoid medical jargon unless necessary.
+- Include practical tips or steps the user can follow.
+- Be empathetic, positive, and professional in tone.
+
+User message: {user_message}
+"""
+
+        # --- API setup ---
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": "openai/gpt-4o-mini",  # or any free/other model
+            "messages": [{"role": "user", "content": prompt}],
+        }
+
+        # --- Retry logic ---
         max_retries = 1
-        retry_delay = 2  # seconds
+        retry_delay = 2
+
         for attempt in range(max_retries):
             try:
-                logger.info(f"Attempt {attempt + 1}: Sending prompt to the AI model")
-                ai_response = model.generate_content(full_prompt)
+                logger.info(f"Attempt {attempt + 1}: Sending to OpenRouter")
+                response = requests.post(OPENROUTER_URL, headers=headers, data=json.dumps(payload))
+                response.raise_for_status()
 
-                # Replace newlines with meaningful breaks for the frontend
-                response_text = ai_response.text.replace("\n", "*****")
-                logger.info(f"AI Response gemini-1.5: {response_text}")
+                data = response.json()
+                ai_text = data["choices"][0]["message"]["content"]
+                response_text = ai_text.replace("\n", "*****")
+
+                logger.info(f"AI Response: {response_text}")
                 return JsonResponse({"response": response_text})
 
-            except Exception as e:
-                logger.error(f"Error during AI response generation: {e}")
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Error calling OpenRouter API: {e}")
                 if attempt < max_retries - 1:
-                    logger.info(f"Retrying in {retry_delay} seconds...")
                     time.sleep(retry_delay)
                 else:
-                    logger.error("Max retries reached. Returning error message.")
                     return JsonResponse(
                         {"response": "Sorry, there was an error processing your request. Please try again later."}
                     )
 
     return JsonResponse({"response": "Invalid request method."})
+
+
+
 
 
 from django.http import JsonResponse
@@ -1233,19 +1259,18 @@ def get_notification_count(request):
 
     return JsonResponse({"total_count": total_unread_count})
 
-
+import requests
+import json
 import datetime
-from django.utils.timezone import now
-from django.http import JsonResponse
-from django.contrib.auth.models import User
-from blog.models import Post
-import google.generativeai as genai
 
 def generate_health_post():
+    """
+    Generates a health-related blog post using OpenRouter API (manual REST call).
+    """
+    OPENROUTER_API_KEY = "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"
     today_date = datetime.datetime.now().strftime("%B %d, %Y")
-    genai.configure(api_key="AIzaSyC5GHHDoBNE7oaSFGD7WXkE5RBkNHG7AXQ")
-    model = genai.GenerativeModel("gemini-1.5-flash")
     
+    # --- Keep the same prompt as before ---
     prompt = f"""
     Generate a unique health-related blog post for {today_date}.
     - Start with an eye-catching title (without the date in the title).
@@ -1254,18 +1279,39 @@ def generate_health_post():
     - If there are any new disease outbreaks, medical advancements, or scams related to health, include a brief awareness note.
     - Ensure each post is different from previous ones (e.g., if one is about a health day, the next should be about new research, fitness tips, or scam alerts).
     - The content should be informative, positive, and practical.
-    
+    - I.n thitl here ** like not come any where ..
     Format:
     Title: [Catchy Title]
     Content: [Engaging 4-5 line paragraph]
     """
-    
-    response = model.generate_content(prompt)
-    
-    if response and response.text:
-        return response.text.strip()
-    else:
-        return None
+
+    # ✅ OpenRouter endpoint
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": "openai/gpt-4o-mini",  # can replace with any OpenRouter model
+        "messages": [{"role": "user", "content": prompt}]
+    }
+
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
+        response.raise_for_status()
+        data = response.json()
+
+        # Extract AI-generated text
+        choices = data.get("choices", [])
+        if choices:
+            text = choices[0]["message"]["content"]
+            return text.strip()
+        else:
+            return "No content generated."
+
+    except requests.exceptions.RequestException as e:
+        return f"Error calling OpenRouter API: {e}"
+
 
 def ai_create_post(request):
     try:
@@ -1286,6 +1332,7 @@ def ai_create_post(request):
     # Extract the first line as title and the rest as content
     lines = content.split("\n")
     title = lines[0].replace("Title: ", "").strip() if lines else "Health Awareness Insights"
+    title = title.strip("*")
     body_content = "\n".join(lines[1:]).replace("Content: ", "").strip()
     
     # Ensure the post is unique
