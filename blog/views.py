@@ -630,9 +630,9 @@ from decouple import config
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# OpenRouter API key
-OPENROUTER_API_KEY = config("OPENROUTER_API_KEY")
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+# Gemini API Key
+GEMINI_API_KEY = "AIzaSyBABY6cfR1gyIoJvlp7WToplg9kuZUgwuw"
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 
 @login_required
@@ -644,7 +644,7 @@ def chatbot_response(request):
         if not user_message:
             return JsonResponse({"response": "I didn't get that. Could you please rephrase?"})
 
-        # --- Improved health prompt ---
+        # Improved Health Prompt
         prompt = f"""
 You are an intelligent and caring health assistant chatbot.
 Your job is to help users only with health, wellness, fitness, nutrition, and medical awareness topics.
@@ -661,35 +661,36 @@ If the user's message is health-related, then:
 User message: {user_message}
 """
 
-        # --- API setup ---
-        headers = {
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json",
-        }
+        # Gemini API Payload Format
         payload = {
-            "model": "openai/gpt-oss-20b:free",  # or any free/other model
-            "messages": [{"role": "user", "content": prompt}],
+            "contents": [
+                {"parts": [{"text": prompt}]}
+            ]
         }
 
-        # --- Retry logic ---
+        headers = {
+            "Content-Type": "application/json",
+        }
+
+        # Retry Logic
         max_retries = 1
         retry_delay = 2
 
         for attempt in range(max_retries):
             try:
-                logger.info(f"Attempt {attempt + 1}: Sending to OpenRouter")
-                response = requests.post(OPENROUTER_URL, headers=headers, data=json.dumps(payload))
+                logger.info(f"Attempt {attempt + 1}: Sending to Gemini API")
+                response = requests.post(GEMINI_URL, headers=headers, data=json.dumps(payload))
                 response.raise_for_status()
 
                 data = response.json()
-                ai_text = data["choices"][0]["message"]["content"]
+                ai_text = data["candidates"][0]["content"]["parts"][0]["text"]
                 response_text = ai_text.replace("\n", "*****")
 
                 logger.info(f"AI Response: {response_text}")
                 return JsonResponse({"response": response_text})
 
             except requests.exceptions.RequestException as e:
-                logger.error(f"Error calling OpenRouter API: {e}")
+                logger.error(f"Error calling Gemini API: {e}")
                 if attempt < max_retries - 1:
                     time.sleep(retry_delay)
                 else:
@@ -698,9 +699,6 @@ User message: {user_message}
                     )
 
     return JsonResponse({"response": "Invalid request method."})
-
-
-
 
 
 from django.http import JsonResponse
