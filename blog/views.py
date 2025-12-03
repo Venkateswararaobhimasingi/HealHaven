@@ -1265,12 +1265,12 @@ from decouple import config
 
 def generate_health_post():
     """
-    Generates a health-related blog post using OpenRouter API (manual REST call).
+    Generates a health-related blog post using Google Gemini API (manual REST call).
     """
-    OPENROUTER_API_KEY = config("OPENROUTER_API_KEY")
+    GEMINI_API_KEY = "AIzaSyBABY6cfR1gyIoJvlp7WToplg9kuZUgwuw"
     today_date = datetime.datetime.now().strftime("%B %d, %Y")
-    
-    # --- Keep the same prompt as before ---
+
+    # --- Same prompt structure ---
     prompt = f"""
     Generate a unique health-related blog post for {today_date}.
     - Start with an eye-catching title (without the date in the title).
@@ -1279,21 +1279,23 @@ def generate_health_post():
     - If there are any new disease outbreaks, medical advancements, or scams related to health, include a brief awareness note.
     - Ensure each post is different from previous ones (e.g., if one is about a health day, the next should be about new research, fitness tips, or scam alerts).
     - The content should be informative, positive, and practical.
-    - I.n thitl here ** like not come any where ..
+    - In the title here ** should not appear anywhere.
     Format:
     Title: [Catchy Title]
     Content: [Engaging 4-5 line paragraph]
     """
 
-    # ✅ OpenRouter endpoint
-    url = "https://openrouter.ai/api/v1/chat/completions"
+    # Gemini API endpoint
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json"
     }
+
     payload = {
-        "model": "openai/gpt-oss-20b:free",  # can replace with any OpenRouter model
-        "messages": [{"role": "user", "content": prompt}]
+        "contents": [
+            {"parts": [{"text": prompt}]}
+        ]
     }
 
     try:
@@ -1302,15 +1304,16 @@ def generate_health_post():
         data = response.json()
 
         # Extract AI-generated text
-        choices = data.get("choices", [])
-        if choices:
-            text = choices[0]["message"]["content"]
+        candidates = data.get("candidates", [])
+        if candidates:
+            text = candidates[0]["content"]["parts"][0]["text"]
             return text.strip()
         else:
             return "No content generated."
 
     except requests.exceptions.RequestException as e:
-        return f"Error calling OpenRouter API: {e}"
+        return f"Error calling Gemini API: {e}"
+
 
 
 def ai_create_post(request):
