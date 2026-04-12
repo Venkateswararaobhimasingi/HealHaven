@@ -618,53 +618,59 @@ def post_delete(request ):
 def chat(request):
     return render(request, 'blog/chat.html')
 
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 import requests
-import json
 import time
 import logging
-from decouple import config
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Gemini API Key
-GEMINI_API_KEY = "AIzaSyBABY6cfR1gyIoJvlp7WToplg9kuZUgwuw"
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+# ✅ Use ENV variable (IMPORTANT)
+GEMINI_API_KEY = "AIzaSyDpvmi-Wv6izDaBrpLkVas5ERhFqNa7iUU"
+
+# ✅ Use stable model
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemma-3n-e4b-it:generateContent?key={GEMINI_API_KEY}"
 
 
 @login_required
 def chatbot_response(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        user_message = data.get("message", "").strip()
+        try:
+            data = json.loads(request.body)
+            user_message = data.get("message", "").strip()
+        except Exception:
+            return JsonResponse({"response": "Invalid request format."})
 
         if not user_message:
             return JsonResponse({"response": "I didn't get that. Could you please rephrase?"})
 
-        # Improved Health Prompt
+        # ✅ Health-focused prompt
         prompt = f"""
 You are an intelligent and caring health assistant chatbot.
-Your job is to help users only with health, wellness, fitness, nutrition, and medical awareness topics.
 
-If the user's question is NOT related to health or medical information, reply strictly with:
+Rules:
+- Only answer health, wellness, fitness, nutrition, or medical-related questions.
+- If NOT related, reply ONLY:
 "Please ask only health-related questions so I can help you better."
 
-If the user's message is health-related, then:
-- Provide a clear, well-structured, and factual explanation.
-- Avoid medical jargon unless necessary.
-- Include practical tips or steps the user can follow.
-- Be empathetic, positive, and professional in tone.
+If health-related:
+- Give clear explanation
+- Avoid complex jargon
+- Provide practical tips
+- Be empathetic and professional
 
 User message: {user_message}
 """
 
-        # Gemini API Payload Format
         payload = {
             "contents": [
-                {"parts": [{"text": prompt}]}
+                {
+                    "parts": [{"text": prompt}]
+                }
             ]
         }
 
@@ -672,31 +678,43 @@ User message: {user_message}
             "Content-Type": "application/json",
         }
 
-        # Retry Logic
-        max_retries = 1
+        max_retries = 2
         retry_delay = 2
 
         for attempt in range(max_retries):
             try:
-                logger.info(f"Attempt {attempt + 1}: Sending to Gemini API")
-                response = requests.post(GEMINI_URL, headers=headers, data=json.dumps(payload))
-                response.raise_for_status()
+                logger.info(f"Attempt {attempt + 1}: Calling Gemini API")
 
-                data = response.json()
-                ai_text = data["candidates"][0]["content"]["parts"][0]["text"]
-                response_text = ai_text.replace("\n", "*****")
+                # ✅ FIXED REQUEST
+                response = requests.post(GEMINI_URL, json=payload)
 
-                logger.info(f"AI Response: {response_text}")
-                return JsonResponse({"response": response_text})
+                logger.info(f"Status Code: {response.status_code}")
+                logger.info(f"Response: {response.text}")
+
+                if response.status_code != 200:
+                    return JsonResponse({
+                        "response": f"AI Error: {response.status_code}"
+                    })
+
+                result = response.json()
+
+                candidates = result.get("candidates", [])
+                if candidates:
+                    ai_text = candidates[0]["content"]["parts"][0]["text"]
+                    response_text = ai_text.replace("\n", "*****")
+                    return JsonResponse({"response": response_text})
+                else:
+                    return JsonResponse({"response": "No response generated."})
 
             except requests.exceptions.RequestException as e:
-                logger.error(f"Error calling Gemini API: {e}")
+                logger.error(f"Error: {e}")
+
                 if attempt < max_retries - 1:
                     time.sleep(retry_delay)
                 else:
-                    return JsonResponse(
-                        {"response": "Sorry, there was an error processing your request. Please try again later."}
-                    )
+                    return JsonResponse({
+                        "response": "Sorry, AI service is temporarily unavailable."
+                    })
 
     return JsonResponse({"response": "Invalid request method."})
 
@@ -1263,47 +1281,58 @@ import json
 import datetime
 from decouple import config
 
+import requests
+import datetime
+import os
+
 def generate_health_post():
     """
-    Generates a health-related blog post using Google Gemini API (manual REST call).
+    Generates a health-related blog post using Google Gemini API.
     """
-    GEMINI_API_KEY = "AIzaSyBABY6cfR1gyIoJvlp7WToplg9kuZUgwuw"
+
+    # ✅ Get API key from environment (Vercel / local)
+    GEMINI_API_KEY = "AIzaSyDpvmi-Wv6izDaBrpLkVas5ERhFqNa7iUU"
+
+    if not GEMINI_API_KEY:
+        return "Error: API key not found."
+
     today_date = datetime.datetime.now().strftime("%B %d, %Y")
 
-    # --- Same prompt structure ---
     prompt = f"""
-    Generate a unique health-related blog post for {today_date}.
-    - Start with an eye-catching title (without the date in the title).
-    - Write a short, engaging paragraph (4-5 lines) on health tips, awareness, or recent discoveries.
-    - If today is a special health day (e.g., World Health Day), mention it.
-    - If there are any new disease outbreaks, medical advancements, or scams related to health, include a brief awareness note.
-    - Ensure each post is different from previous ones (e.g., if one is about a health day, the next should be about new research, fitness tips, or scam alerts).
-    - The content should be informative, positive, and practical.
-    - In the title here ** should not appear anywhere.
-    Format:
-    Title: [Catchy Title]
-    Content: [Engaging 4-5 line paragraph]
-    """
+Generate a unique health-related blog post for {today_date}.
+- Start with an eye-catching title (without the date in the title).
+- Write a short, engaging paragraph (4-5 lines) on health tips, awareness, or recent discoveries.
+- If today is a special health day (e.g., World Health Day), mention it.
+- If there are any new disease outbreaks, medical advancements, or scams related to health, include a brief awareness note.
+- Ensure each post is different from previous ones.
+- The content should be informative, positive, and practical.
 
-    # Gemini API endpoint
+Format:
+Title: [Catchy Title]
+Content: [Engaging 4-5 line paragraph]
+"""
+
+    # ✅ Use stable model
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
-
-    headers = {
-        "Content-Type": "application/json"
-    }
 
     payload = {
         "contents": [
-            {"parts": [{"text": prompt}]}
+            {
+                "parts": [{"text": prompt}]
+            }
         ]
     }
 
     try:
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
-        response.raise_for_status()
+        response = requests.post(url, json=payload)  # ✅ IMPORTANT FIX
+        print("Status Code:", response.status_code)
+        print("Response:", response.text)  # Debug log
+
+        if response.status_code != 200:
+            return f"Error: {response.status_code} - {response.text}"
+
         data = response.json()
 
-        # Extract AI-generated text
         candidates = data.get("candidates", [])
         if candidates:
             text = candidates[0]["content"]["parts"][0]["text"]
@@ -1311,8 +1340,8 @@ def generate_health_post():
         else:
             return "No content generated."
 
-    except requests.exceptions.RequestException as e:
-        return f"Error calling Gemini API: {e}"
+    except Exception as e:
+        return f"Exception: {str(e)}"
 
 
 
