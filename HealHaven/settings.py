@@ -101,14 +101,21 @@ import dj_database_url
         ssl_require=True
     )
 }'''
-DATABASES = {
+'''DATABASES = {
     "default": dj_database_url.parse(
         "postgresql://postgres:yFCEIOwmDdaoXKOuwDLtzRrzdWsbHZru@hopper.proxy.rlwy.net:29246/railway",
         conn_max_age=600,
         ssl_require=True
     )
-}
+}'''
 
+DATABASES = {
+    "default": dj_database_url.parse(
+        "postgresql://postgres.ankwffxsbvxflrwwtmkm:venkatesh9491019773@aws-1-ap-south-1.pooler.supabase.com:5432/postgres",
+        conn_max_age=600,
+        ssl_require=True
+    )
+}
 IMGUR_CLIENT_ID = "b2120d536b887bc"
 IMGUR_CLIENT_SECRET = "6c527bb3204d5ba4e81f488f49a4d78949beb076"
 
