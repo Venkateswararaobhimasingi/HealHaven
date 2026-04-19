@@ -112,7 +112,7 @@ import dj_database_url
 DATABASES = {
     "default": dj_database_url.parse(
         "postgresql://postgres.ankwffxsbvxflrwwtmkm:venkatesh9491019773@aws-1-ap-south-1.pooler.supabase.com:5432/postgres",
-        conn_max_age=600,
+        conn_max_age=60,
         ssl_require=True
     )
 }
