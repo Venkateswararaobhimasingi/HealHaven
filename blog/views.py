@@ -623,39 +623,53 @@ from django.http import JsonResponse
 import requests
 import time
 import logging
-import os
+import json
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ✅ Use ENV variable (IMPORTANT)
-GEMINI_API_KEY = "AIzaSyDpvmi-Wv6izDaBrpLkVas5ERhFqNa7iUU"
+# Single Cerebras API Key (wrapped)
+CEREBRAS_API_KEY = "venkateshcsk-n6396pk9cvw54fmprpxr6r8h5hw2wj5epx36mne8ded49hc6venkatesh"
 
-# ✅ Use stable model
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemma-3n-e4b-it:generateContent?key={GEMINI_API_KEY}"
+# API URL
+CEREBRAS_URL = "https://api.cerebras.ai/v1/chat/completions"
 
 
 @login_required
 def chatbot_response(request):
     if request.method == "POST":
+
         try:
             data = json.loads(request.body)
             user_message = data.get("message", "").strip()
+
         except Exception:
-            return JsonResponse({"response": "Invalid request format."})
+            return JsonResponse({
+                "response": "Invalid request format."
+            })
 
         if not user_message:
-            return JsonResponse({"response": "I didn't get that. Could you please rephrase?"})
+            return JsonResponse({
+                "response":
+                "I didn't get that. Could you please rephrase?"
+            })
 
-        # ✅ Health-focused prompt
+        # unwrap key
+        api_key = (
+            CEREBRAS_API_KEY[10:-10]
+            if CEREBRAS_API_KEY.startswith("venkatesh")
+            and CEREBRAS_API_KEY.endswith("venkatesh")
+            else CEREBRAS_API_KEY
+        )
+
         prompt = f"""
 You are an intelligent and caring health assistant chatbot.
 
 Rules:
 - Only answer health, wellness, fitness, nutrition, or medical-related questions.
 - If NOT related, reply ONLY:
-"Please ask only health-related questions so I can help you better."
+Please ask only health-related questions so I can help you better.
 
 If health-related:
 - Give clear explanation
@@ -666,59 +680,90 @@ If health-related:
 User message: {user_message}
 """
 
-        payload = {
-            "contents": [
-                {
-                    "parts": [{"text": prompt}]
-                }
-            ]
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
         }
 
-        headers = {
-            "Content-Type": "application/json",
+        payload = {
+            "model": "llama3.1-8b",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "temperature": 0.4,
+            "max_completion_tokens": 250
         }
 
         max_retries = 2
         retry_delay = 2
 
         for attempt in range(max_retries):
+
             try:
-                logger.info(f"Attempt {attempt + 1}: Calling Gemini API")
+                logger.info(
+                    f"Attempt {attempt + 1}: Calling Cerebras API"
+                )
 
-                # ✅ FIXED REQUEST
-                response = requests.post(GEMINI_URL, json=payload)
+                response = requests.post(
+                    CEREBRAS_URL,
+                    headers=headers,
+                    json=payload,
+                    timeout=30
+                )
 
-                logger.info(f"Status Code: {response.status_code}")
-                logger.info(f"Response: {response.text}")
+                logger.info(
+                    f"Status Code: {response.status_code}"
+                )
+
+                logger.info(
+                    f"Response: {response.text[:500]}"
+                )
 
                 if response.status_code != 200:
+
+                    if attempt < max_retries - 1:
+                        time.sleep(retry_delay)
+                        continue
+
                     return JsonResponse({
-                        "response": f"AI Error: {response.status_code}"
+                        "response":
+                        f"AI Error: {response.status_code}"
                     })
 
                 result = response.json()
 
-                candidates = result.get("candidates", [])
-                if candidates:
-                    ai_text = candidates[0]["content"]["parts"][0]["text"]
-                    response_text = ai_text.replace("\n", "*****")
-                    return JsonResponse({"response": response_text})
-                else:
-                    return JsonResponse({"response": "No response generated."})
+                ai_text = result["choices"][0]["message"]["content"]
+
+                response_text = ai_text.replace("\n", "*****")
+
+                logger.info(
+                    f"Remaining Requests Today: "
+                    f"{response.headers.get('x-ratelimit-remaining-requests-day')}"
+                )
+
+                return JsonResponse({
+                    "response": response_text
+                })
 
             except requests.exceptions.RequestException as e:
+
                 logger.error(f"Error: {e}")
 
                 if attempt < max_retries - 1:
                     time.sleep(retry_delay)
+
                 else:
                     return JsonResponse({
-                        "response": "Sorry, AI service is temporarily unavailable."
+                        "response":
+                        "Sorry, AI service is temporarily unavailable."
                     })
 
-    return JsonResponse({"response": "Invalid request method."})
-
-
+    return JsonResponse({
+        "response": "Invalid request method."
+    })
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -1279,66 +1324,121 @@ def get_notification_count(request):
 import requests
 import json
 import datetime
-from decouple import config
+import time
+import logging
 
-import requests
-import datetime
-import os
+# Logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Single Cerebras API Key (wrapped)
+CEREBRAS_API_KEY = "venkateshcsk-n6396pk9cvw54fmprpxr6r8h5hw2wj5epx36mne8ded49hc6venkatesh"
+
+# API URL
+CEREBRAS_URL = "https://api.cerebras.ai/v1/chat/completions"
+
 
 def generate_health_post():
     """
-    Generates a health-related blog post using Google Gemini API.
+    Generates a health-related blog post using Cerebras API.
     """
 
-    # ✅ Get API key from environment (Vercel / local)
-    GEMINI_API_KEY = "AIzaSyDpvmi-Wv6izDaBrpLkVas5ERhFqNa7iUU"
+    try:
+        # unwrap key
+        api_key = (
+            CEREBRAS_API_KEY[10:-10]
+            if CEREBRAS_API_KEY.startswith("venkatesh")
+            and CEREBRAS_API_KEY.endswith("venkatesh")
+            else CEREBRAS_API_KEY
+        )
 
-    if not GEMINI_API_KEY:
-        return "Error: API key not found."
+        if not api_key:
+            return "Error: API key not found."
 
-    today_date = datetime.datetime.now().strftime("%B %d, %Y")
+        today_date = datetime.datetime.now().strftime("%B %d, %Y")
 
-    prompt = f"""
+        prompt = f"""
 Generate a unique health-related blog post for {today_date}.
-- Start with an eye-catching title (without the date in the title).
-- Write a short, engaging paragraph (4-5 lines) on health tips, awareness, or recent discoveries.
-- If today is a special health day (e.g., World Health Day), mention it.
-- If there are any new disease outbreaks, medical advancements, or scams related to health, include a brief awareness note.
-- Ensure each post is different from previous ones.
-- The content should be informative, positive, and practical.
+
+Rules:
+- Start with an eye-catching title (without date in title)
+- Write short engaging paragraph (4-5 lines)
+- Topic can be health tips, awareness, nutrition, fitness, prevention, medical progress
+- If today is a special health day, mention it if relevant
+- If any health scams or awareness issue exists, mention briefly
+- Ensure post feels fresh and practical
+- Positive tone
 
 Format:
 Title: [Catchy Title]
-Content: [Engaging 4-5 line paragraph]
+Content: [Engaging paragraph]
 """
 
-    # ✅ Use stable model
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
 
-    payload = {
-        "contents": [
-            {
-                "parts": [{"text": prompt}]
-            }
-        ]
-    }
+        payload = {
+            "model": "llama3.1-8b",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "temperature": 0.8,
+            "max_completion_tokens": 350
+        }
 
-    try:
-        response = requests.post(url, json=payload)  # ✅ IMPORTANT FIX
-        print("Status Code:", response.status_code)
-        print("Response:", response.text)  # Debug log
+        max_retries = 2
+        retry_delay = 2
 
-        if response.status_code != 200:
-            return f"Error: {response.status_code} - {response.text}"
+        for attempt in range(max_retries):
 
-        data = response.json()
+            try:
+                logger.info(
+                    f"Attempt {attempt + 1}: Calling Cerebras API"
+                )
 
-        candidates = data.get("candidates", [])
-        if candidates:
-            text = candidates[0]["content"]["parts"][0]["text"]
-            return text.strip()
-        else:
-            return "No content generated."
+                response = requests.post(
+                    CEREBRAS_URL,
+                    headers=headers,
+                    json=payload,
+                    timeout=30
+                )
+
+                logger.info(
+                    f"Status Code: {response.status_code}"
+                )
+
+                if response.status_code != 200:
+
+                    if attempt < max_retries - 1:
+                        time.sleep(retry_delay)
+                        continue
+
+                    return f"Error: {response.status_code}"
+
+                data = response.json()
+
+                text = data["choices"][0]["message"]["content"].strip()
+
+                logger.info(
+                    f"Remaining Requests Today: "
+                    f"{response.headers.get('x-ratelimit-remaining-requests-day')}"
+                )
+
+                return text
+
+            except Exception as e:
+
+                logger.error(f"Attempt Failed: {e}")
+
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                else:
+                    return f"Exception: {str(e)}"
 
     except Exception as e:
         return f"Exception: {str(e)}"
