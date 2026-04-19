@@ -659,12 +659,7 @@ def chatbot_response(request):
             })
 
         # unwrap key
-        api_key = (
-            CEREBRAS_API_KEY[10:-10]
-            if CEREBRAS_API_KEY.startswith("venkatesh")
-            and CEREBRAS_API_KEY.endswith("venkatesh")
-            else CEREBRAS_API_KEY
-        )
+        api_key = CEREBRAS_API_KEY
 
         prompt = f"""
 You are an intelligent and caring health assistant chatbot.
@@ -1350,12 +1345,7 @@ def generate_health_post():
 
     try:
         # unwrap key
-        api_key = (
-            CEREBRAS_API_KEY[10:-10]
-            if CEREBRAS_API_KEY.startswith("venkatesh")
-            and CEREBRAS_API_KEY.endswith("venkatesh")
-            else CEREBRAS_API_KEY
-        )
+        api_key = CEREBRAS_API_KEY
 
         if not api_key:
             return "Error: API key not found."
