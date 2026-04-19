@@ -737,7 +737,7 @@ User message: {user_message}
                     })
 
                 result = response.json()
-
+                print(result)
                 ai_text = result["choices"][0]["message"]["content"]
 
                 response_text = ai_text.replace("\n", "*****")
