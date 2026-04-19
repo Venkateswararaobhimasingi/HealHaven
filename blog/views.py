@@ -630,7 +630,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Single Cerebras API Key (wrapped)
-CEREBRAS_API_KEY = "venkateshcsk-n6396pk9cvw54fmprpxr6r8h5hw2wj5epx36mne8ded49hc6venkatesh"
+#CEREBRAS_API_KEY = "venkateshapikeyvenkatesh"
+from decouple import config
+
+CEREBRAS_API_KEY = config("CEREBRAS_API_KEY")
 
 # API URL
 CEREBRAS_URL = "https://api.cerebras.ai/v1/chat/completions"
@@ -1332,7 +1335,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Single Cerebras API Key (wrapped)
-CEREBRAS_API_KEY = "venkateshcsk-n6396pk9cvw54fmprpxr6r8h5hw2wj5epx36mne8ded49hc6venkatesh"
+from decouple import config
+
+CEREBRAS_API_KEY = config("CEREBRAS_API_KEY")
 
 # API URL
 CEREBRAS_URL = "https://api.cerebras.ai/v1/chat/completions"
